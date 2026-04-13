@@ -25,7 +25,7 @@ module Admin
     end
 
     def booking_params
-      params.require(:booking).permit(:status, :notes)
+      params.require(:booking).permit(:status, :payment_status, :notes)
     end
   end
 end

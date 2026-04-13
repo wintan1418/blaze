@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_many :bookings, dependent: :destroy
   has_many :reviews, dependent: :destroy
+  has_many :payments, dependent: :destroy
 
   validates :full_name, presence: true, on: :update, if: -> { will_save_change_to_full_name? }
 

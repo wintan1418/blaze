@@ -1,0 +1,31 @@
+<% content_for :page_title, "Payment Failed" %>
+
+<section class="max-w-2xl mx-auto px-6 lg:px-10 pt-20 pb-24 text-center">
+  <div class="w-20 h-20 mx-auto rounded-full bg-red-500/10 border border-red-500/30 grid place-items-center mb-6">
+    <svg class="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  </div>
+
+  <span class="chip bg-red-500/10 text-red-300">Payment not completed</span>
+  <h1 class="font-display text-4xl md:text-5xl font-black mt-4">Something went <span class="text-red-400">sideways</span>.</h1>
+  <p class="mt-6 text-lg text-white/60 max-w-md mx-auto">
+    Your payment wasn't confirmed. Don't worry — no money was taken. Your booking is being held for a short time if you want to try again.
+  </p>
+
+  <% if @booking %>
+    <div class="card p-6 mt-10 text-left">
+      <p class="label-blaze">Booking reference</p>
+      <p class="font-mono text-lg mt-1"><%= @booking.reference %></p>
+      <p class="text-sm text-white/50 mt-3"><%= naira(@payment.amount_kobo) %> · <%= @payment.status.humanize %></p>
+    </div>
+  <% end %>
+
+  <div class="mt-8 flex justify-center gap-3">
+    <% if @booking %>
+      <%= link_to "Try again", new_gaming_slot_booking_path(@booking.bookable_id), class: "btn-primary" if @booking.bookable.is_a?(GamingSlot) %>
+      <%= link_to "Try again", new_screening_booking_path(@booking.bookable_id), class: "btn-primary" if @booking.bookable.is_a?(Screening) %>
+    <% end %>
+    <%= link_to "My bookings", bookings_path, class: "btn-ghost" %>
+  </div>
+</section>

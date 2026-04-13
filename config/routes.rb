@@ -25,6 +25,12 @@ Rails.application.routes.draw do
     member { post :cancel }
   end
 
+  # Payments (Paystack)
+  get  "/payments/callback",    to: "payments#callback", as: :payments_callback
+  get  "/payments/:id/success", to: "payments#success",  as: :success_payment
+  get  "/payments/:id/failed",  to: "payments#failed",   as: :failed_payment
+  post "/payments/webhook",     to: "payments#webhook",  as: :payments_webhook
+
   # Locations
   resources :locations, only: [ :index, :show ]
 

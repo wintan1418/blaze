@@ -43,9 +43,16 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <%= f.submit "Confirm booking", class: "btn-primary" %>
+        <% if PaystackClient.configured? %>
+          <%= f.submit "Pay #{naira(@slot.price_kobo)} with Paystack", class: "btn-primary" %>
+        <% else %>
+          <%= f.submit "Reserve (pay at counter)", class: "btn-primary" %>
+        <% end %>
         <%= link_to "Cancel", gaming_slots_path, class: "text-white/50 hover:text-white text-sm" %>
       </div>
+      <% if PaystackClient.configured? %>
+        <p class="text-xs text-white/40 mt-2">Secure checkout powered by Paystack. Cards · bank transfer · USSD.</p>
+      <% end %>
     <% end %>
   </div>
 </section>

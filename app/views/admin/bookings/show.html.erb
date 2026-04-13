@@ -18,7 +18,7 @@
         <p class="text-sm text-white/50"><%= @booking.bookable.screen.name %></p>
       <% end %>
     </div>
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-4 gap-4">
       <div>
         <p class="label-blaze">Seats</p>
         <p class="font-display text-2xl font-bold"><%= @booking.seats %></p>
@@ -31,7 +31,30 @@
         <p class="label-blaze">Status</p>
         <p class="font-medium capitalize"><%= @booking.status %></p>
       </div>
+      <div>
+        <p class="label-blaze">Payment</p>
+        <% if @booking.paid? %>
+          <span class="chip bg-emerald-500/10 text-emerald-300">Paid</span>
+          <% if @booking.paid_at %><p class="text-xs text-white/40 mt-1"><%= @booking.paid_at.strftime("%b %d · %I:%M %p") %></p><% end %>
+        <% else %>
+          <span class="chip bg-blaze-amber/10 text-blaze-amber">Unpaid</span>
+        <% end %>
+      </div>
     </div>
+
+    <% if @booking.payments.any? %>
+      <div class="pt-4 border-t border-white/10">
+        <p class="label-blaze">Payment history</p>
+        <ul class="mt-2 space-y-1">
+          <% @booking.payments.recent.each do |p| %>
+            <li class="text-xs font-mono text-white/60">
+              <%= p.reference %> · <%= p.status %> · <%= naira(p.amount_kobo) %>
+              <% if p.paid_at %> · paid <%= time_ago_in_words(p.paid_at) %> ago<% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
     <% if @booking.notes.present? %>
       <div>
         <p class="label-blaze">Notes</p>
@@ -45,6 +68,10 @@
       <div>
         <%= f.label :status, class: "label-blaze" %>
         <%= f.select :status, Booking::STATUSES.map { |s| [ s.capitalize, s ] }, {}, class: "input-blaze" %>
+      </div>
+      <div>
+        <%= f.label :payment_status, "Payment", class: "label-blaze" %>
+        <%= f.select :payment_status, Booking::PAYMENT_STATUSES.map { |s| [ s.capitalize, s ] }, {}, class: "input-blaze" %>
       </div>
       <div>
         <%= f.label :notes, class: "label-blaze" %>
