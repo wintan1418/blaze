@@ -1,0 +1,66 @@
+<% content_for :page_title, "Order #{@order.reference}" %>
+
+<section class="max-w-3xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← My orders", orders_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="mt-8 text-center">
+    <% case @order.payment_status
+       when "paid" %><span class="chip bg-emerald-500/10 text-emerald-300">Paid</span>
+    <% else %><span class="chip bg-blaze-amber/10 text-blaze-amber">Unpaid</span><% end %>
+    <p class="font-mono text-xs text-white/40 mt-4"><%= @order.reference %></p>
+    <h1 class="font-display text-4xl font-black mt-2 capitalize"><%= @order.status %></h1>
+    <% if @order.location %><p class="text-sm text-white/50 mt-2"><%= @order.fulfillment.humanize %> @ <%= @order.location.name %></p><% end %>
+    <% if @order.delivery? %>
+      <div class="mt-4 inline-flex items-center gap-2 chip
+        <%= case @order.delivery_status
+            when 'dispatched' then 'bg-sky-500/10 text-sky-300'
+            when 'delivered'  then 'bg-emerald-500/10 text-emerald-300'
+            when 'failed'     then 'bg-red-500/10 text-red-300'
+            else 'bg-blaze-amber/10 text-blaze-amber'
+            end %>">
+        Delivery · <%= @order.delivery_status.humanize %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="card p-6 mt-10 space-y-4">
+    <% @order.order_items.includes(:menu_item).each do |item| %>
+      <div class="flex items-center justify-between pb-3 border-b border-white/5 last:border-0 last:pb-0">
+        <div class="flex items-center gap-3">
+          <span class="chip bg-blaze-smoke border border-white/10"><%= item.quantity %>×</span>
+          <span class="font-medium"><%= item.name_snapshot %></span>
+        </div>
+        <span class="text-white/60"><%= naira(item.subtotal_kobo) %></span>
+      </div>
+    <% end %>
+    <% if @order.delivery_fee_kobo.to_i > 0 %>
+      <div class="flex items-baseline justify-between text-sm text-white/70 pt-3 border-t border-white/10">
+        <span>Subtotal</span>
+        <span><%= naira(@order.subtotal_kobo) %></span>
+      </div>
+      <div class="flex items-baseline justify-between text-sm text-white/70">
+        <span>Delivery fee</span>
+        <span><%= naira(@order.delivery_fee_kobo) %></span>
+      </div>
+    <% end %>
+    <div class="flex items-baseline justify-between pt-3 border-t border-white/10">
+      <span class="label-blaze">Total</span>
+      <span class="font-display text-3xl font-bold fire-text"><%= naira(@order.total_kobo) %></span>
+    </div>
+  </div>
+
+  <% if @order.delivery? && @order.delivery_address.present? %>
+    <div class="mt-6 card p-5">
+      <p class="label-blaze">Deliver to</p>
+      <p class="font-medium mt-2"><%= @order.delivery_address %></p>
+      <p class="text-sm text-white/60"><%= [ @order.delivery_city, @order.delivery_phone ].compact.join(" · ") %></p>
+    </div>
+  <% end %>
+
+  <% if @order.notes.present? %>
+    <div class="mt-6 card p-5">
+      <p class="label-blaze">Notes</p>
+      <p class="text-sm text-white/70 mt-2"><%= @order.notes %></p>
+    </div>
+  <% end %>
+</section>

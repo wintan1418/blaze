@@ -5,6 +5,7 @@ class MenuItem < ApplicationRecord
   belongs_to :menu_category
   has_one_attached :image
   has_many :reviews, as: :reviewable, dependent: :destroy
+  has_many :order_items, dependent: :restrict_with_error
 
   validates :name, presence: true
   validates :price_kobo, numericality: { greater_than_or_equal_to: 0 }

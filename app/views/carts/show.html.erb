@@ -1,0 +1,83 @@
+<% content_for :page_title, "Your cart" %>
+
+<section class="max-w-4xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← Keep shopping", menu_items_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="mt-8 flex items-end justify-between">
+    <div>
+      <span class="chip bg-blaze-red/10 text-blaze-red">Your cart</span>
+      <h1 class="font-display text-5xl md:text-6xl font-black mt-4"><%= @cart.total_items %> <%= "item".pluralize(@cart.total_items) %></h1>
+    </div>
+    <% if !@cart.empty? %>
+      <%= button_to "Clear cart", cart_path, method: :delete,
+            class: "text-sm text-white/50 hover:text-red-400",
+            form: { class: "inline", data: { turbo_confirm: "Empty your cart?" } } %>
+    <% end %>
+  </div>
+
+  <% if @cart.empty? %>
+    <div class="card p-12 mt-10 text-center">
+      <p class="font-display text-2xl text-white/60">Your cart is empty.</p>
+      <p class="mt-3 text-sm text-white/40">Nothing to see here yet — go pick something fire.</p>
+      <%= link_to "Browse the menu", menu_items_path, class: "btn-primary mt-8 inline-flex" %>
+    </div>
+  <% else %>
+    <div class="grid lg:grid-cols-3 gap-8 mt-10">
+      <!-- Items -->
+      <div class="lg:col-span-2 space-y-3">
+        <% @cart_lines.each do |line| %>
+          <div class="card p-4 flex items-center gap-4">
+            <div class="w-20 h-20 rounded-xl overflow-hidden bg-blaze-smoke shrink-0">
+              <% if line.menu_item.image.attached? %>
+                <%= image_tag line.menu_item.image, class: "w-full h-full object-cover" %>
+              <% else %>
+                <div class="w-full h-full grid place-items-center text-white/20 text-xl">B</div>
+              <% end %>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <p class="text-[10px] uppercase tracking-widest text-blaze-amber"><%= line.menu_item.menu_category.name %></p>
+              <h3 class="font-display text-lg font-bold truncate"><%= line.menu_item.name %></h3>
+              <p class="text-sm text-white/50 mt-0.5"><%= naira(line.menu_item.price_kobo) %> each</p>
+            </div>
+
+            <%= form_with url: update_cart_path, method: :patch, class: "flex items-center gap-2" do |f| %>
+              <%= f.hidden_field :menu_item_id, value: line.menu_item.id %>
+              <%= f.number_field :qty, value: line.quantity, min: 0, max: 99, class: "input-blaze !w-16 !py-2 text-center", onchange: "this.form.requestSubmit()" %>
+            <% end %>
+
+            <div class="text-right shrink-0 w-24">
+              <p class="font-display text-lg font-bold"><%= naira(line.subtotal_kobo) %></p>
+              <%= button_to "Remove", remove_cart_path(menu_item_id: line.menu_item.id), method: :delete,
+                    class: "text-xs text-white/40 hover:text-red-400",
+                    form: { class: "inline", data: { turbo: false } } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Summary -->
+      <div class="lg:col-span-1">
+        <div class="card p-6 sticky top-28">
+          <h3 class="font-display text-lg font-bold">Summary</h3>
+          <div class="mt-5 space-y-2 text-sm">
+            <div class="flex justify-between text-white/70">
+              <span>Subtotal (<%= @cart.total_items %> items)</span>
+              <span><%= naira(@cart.total_kobo) %></span>
+            </div>
+            <div class="flex justify-between text-white/50 text-xs">
+              <span>VAT & service</span>
+              <span>Included</span>
+            </div>
+          </div>
+          <div class="mt-5 pt-5 border-t border-white/10 flex items-baseline justify-between">
+            <span class="label-blaze">Total</span>
+            <span class="font-display text-3xl font-bold fire-text"><%= naira(@cart.total_kobo) %></span>
+          </div>
+          <%= link_to "Proceed to checkout", new_order_path, class: "btn-primary w-full mt-6" %>
+          <p class="text-xs text-white/40 text-center mt-3">Secure payment via Paystack</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

@@ -170,6 +170,37 @@
 
 <div class="card p-6 space-y-6">
   <div>
+    <h2 class="font-display text-xl font-bold">Delivery</h2>
+    <p class="text-sm text-white/50 mt-1">Enable delivery, set a flat fee, and optional free-delivery threshold.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <label class="flex items-center gap-3 md:col-span-2">
+      <%= f.check_box :delivery_enabled, class: "accent-blaze-red w-5 h-5" %>
+      <span class="text-sm text-white">Delivery is enabled</span>
+    </label>
+    <div>
+      <label class="label-blaze">Delivery fee (kobo)</label>
+      <%= f.number_field :delivery_fee_kobo, step: 100, min: 0, class: "input-blaze" %>
+      <p class="text-xs text-white/40 mt-1">100 kobo = ₦1. 50000 = ₦500.</p>
+    </div>
+    <div>
+      <label class="label-blaze">Free delivery when subtotal ≥ (kobo)</label>
+      <%= f.number_field :delivery_free_over_kobo, step: 100, min: 0, class: "input-blaze" %>
+      <p class="text-xs text-white/40 mt-1">0 = never free.</p>
+    </div>
+    <div>
+      <label class="label-blaze">Radius (km)</label>
+      <%= f.number_field :delivery_radius_km, min: 0, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Delivery note shown at checkout</label>
+      <%= f.text_area :delivery_note, rows: 2, class: "input-blaze", placeholder: "30–60 min · within 15km of Akure" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
     <h2 class="font-display text-xl font-bold">Socials & footer</h2>
   </div>
   <div class="grid md:grid-cols-2 gap-5">

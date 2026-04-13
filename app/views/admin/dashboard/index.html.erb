@@ -1,70 +1,198 @@
 <% content_for :page_title, "Dashboard" %>
-<% content_for :page_subtitle, "Command center for Blaze Cafe" %>
+<% content_for :page_subtitle, "Command center for Blaze Cafe · last 30 days" %>
 
+<!-- Headline revenue stats -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-5 bg-linear-to-br from-blaze-red/20 to-blaze-red/5 border-blaze-red/30">
+    <p class="label-blaze">Total revenue</p>
+    <p class="font-display text-4xl md:text-5xl font-black mt-2 fire-text leading-none"><%= naira(@stats[:revenue_total]) %></p>
+    <p class="text-xs text-white/60 mt-2">last 30 days · all sources</p>
+  </div>
+  <div class="card p-5">
+    <p class="label-blaze">Food orders</p>
+    <p class="font-display text-3xl font-bold mt-2"><%= naira(@stats[:revenue_orders]) %></p>
+    <p class="text-xs text-white/50 mt-2">paid online</p>
+  </div>
+  <div class="card p-5">
+    <p class="label-blaze">Bookings</p>
+    <p class="font-display text-3xl font-bold mt-2"><%= naira(@stats[:revenue_bookings]) %></p>
+    <p class="text-xs text-white/50 mt-2">gaming + cinema</p>
+  </div>
+  <div class="card p-5">
+    <p class="label-blaze">Offline sales</p>
+    <p class="font-display text-3xl font-bold mt-2"><%= naira(@stats[:revenue_offline]) %></p>
+    <p class="text-xs text-white/50 mt-2">walk-ins + in-person</p>
+  </div>
+</section>
+
+<!-- Secondary stat rail -->
 <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
   <% [
-    [ "Menu items", @stats[:menu_items], "available on the menu" ],
-    [ "Locations", @stats[:locations], "branches live" ],
-    [ "Gaming slots", @stats[:upcoming_slots], "upcoming this week" ],
-    [ "Screenings", @stats[:upcoming_screenings], "upcoming screenings" ],
-    [ "Bookings today", @stats[:bookings_today], "new in the last 24h" ],
-    [ "Bookings total", @stats[:bookings_total], "lifetime bookings" ],
-    [ "Active consoles", @stats[:active_consoles], "PS4 / PS5 in rotation" ],
-    [ "Customers", @stats[:users_total], "registered accounts" ]
+    [ "Menu items",     @stats[:menu_items],         "on the menu" ],
+    [ "Locations",      @stats[:locations],          "branches live" ],
+    [ "Upcoming slots", @stats[:upcoming_slots],     "bookable this week" ],
+    [ "Screenings",     @stats[:upcoming_screenings], "films lined up" ],
+    [ "Orders today",   @stats[:orders_today],       "new in last 24h" ],
+    [ "Bookings today", @stats[:bookings_today],     "new in last 24h" ],
+    [ "Active consoles",@stats[:active_consoles],    "PS4 / PS5 running" ],
+    [ "Customers",      @stats[:users_total],        "registered accounts" ]
   ].each do |(label, value, sub)| %>
-    <div class="card p-5">
+    <div class="card p-4">
       <p class="text-xs uppercase tracking-widest text-white/40"><%= label %></p>
-      <p class="font-display text-4xl font-bold mt-2 fire-text"><%= value %></p>
-      <p class="text-xs text-white/50 mt-2"><%= sub %></p>
+      <p class="font-display text-2xl font-bold mt-1"><%= value %></p>
+      <p class="text-[10px] text-white/40 mt-1"><%= sub %></p>
     </div>
   <% end %>
 </section>
 
-<section class="grid lg:grid-cols-2 gap-6">
+<!-- Revenue timeline -->
+<section class="card p-6 mb-6">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h2 class="font-display text-xl font-bold">Revenue timeline</h2>
+      <p class="text-xs text-white/50">Daily total across food orders, bookings, and offline sales</p>
+    </div>
+    <span class="chip bg-blaze-red/10 text-blaze-red">30 days</span>
+  </div>
+  <% if @has_revenue %>
+    <% chart_series = @revenue_timeline.map { |s| { name: s[:name], data: s[:data] } } %>
+    <%= area_chart chart_series,
+          height: "280px",
+          colors: [ "#E8341A", "#F5A623", "#8B5CF6" ],
+          prefix: "₦",
+          thousands: ",",
+          library: {
+            plugins: { legend: { labels: { color: "rgba(255,255,255,0.8)" } } },
+            scales: {
+              x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } },
+              y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } }
+            }
+          } %>
+  <% else %>
+    <div class="relative h-[280px] rounded-2xl border border-dashed border-white/10 grid place-items-center text-center px-6 overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(232,52,26,0.08),transparent_60%)]"></div>
+      <div class="relative">
+        <p class="font-display text-2xl font-bold text-white/80">No revenue yet.</p>
+        <p class="text-sm text-white/50 mt-2 max-w-md mx-auto">Your chart lights up the moment the first paid order, paid booking, or offline sale lands in the last 30 days.</p>
+        <div class="mt-6 flex flex-wrap gap-3 justify-center">
+          <%= link_to "Record offline sale", new_admin_offline_sale_path, class: "btn-primary text-sm" %>
+          <%= link_to "View orders", admin_orders_path, class: "btn-ghost text-sm" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<!-- Pie + bar row -->
+<section class="grid lg:grid-cols-3 gap-6 mb-6">
+  <div class="card p-6">
+    <h2 class="font-display text-xl font-bold mb-4">Revenue by source</h2>
+    <% if @revenue_by_source.values.sum > 0 %>
+      <%= pie_chart @revenue_by_source,
+            height: "260px",
+            colors: [ "#E8341A", "#8B5CF6", "#38BDF8", "#F5A623" ],
+            donut: true,
+            prefix: "₦",
+            thousands: ",",
+            library: {
+              plugins: { legend: { position: "bottom", labels: { color: "rgba(255,255,255,0.8)" } } }
+            } %>
+    <% else %>
+      <p class="text-sm text-white/40 py-16 text-center">No revenue recorded in this window yet.</p>
+    <% end %>
+  </div>
+
+  <div class="card p-6 lg:col-span-2">
+    <div class="mb-4">
+      <h2 class="font-display text-xl font-bold">Top menu items</h2>
+      <p class="text-xs text-white/50">Units sold (online orders + offline sales)</p>
+    </div>
+    <% if @top_items.any? %>
+      <%= bar_chart @top_items,
+            height: "260px",
+            colors: [ "#E8341A" ],
+            library: {
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } },
+                y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.7)" } }
+              }
+            } %>
+    <% else %>
+      <p class="text-sm text-white/40 py-16 text-center">No sales recorded yet.</p>
+    <% end %>
+  </div>
+</section>
+
+<!-- Location revenue + recent lists -->
+<section class="grid lg:grid-cols-3 gap-6">
+  <div class="card p-6">
+    <h2 class="font-display text-xl font-bold mb-4">Revenue by location</h2>
+    <% if @revenue_by_location.any? %>
+      <%= column_chart @revenue_by_location,
+            height: "240px",
+            colors: [ "#F5A623" ],
+            prefix: "₦",
+            thousands: ",",
+            library: {
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.6)" } },
+                y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } }
+              }
+            } %>
+    <% else %>
+      <p class="text-sm text-white/40 py-12 text-center">No branch revenue yet.</p>
+    <% end %>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="font-display text-xl font-bold">Recent orders</h2>
+      <%= link_to "All →", admin_orders_path, class: "text-xs text-white/50 hover:text-white" %>
+    </div>
+    <% if @recent_orders.any? %>
+      <ul class="divide-y divide-white/5">
+        <% @recent_orders.each do |order| %>
+          <li class="py-2.5 flex items-center justify-between text-sm">
+            <div class="min-w-0">
+              <p class="font-mono text-xs text-white/40"><%= order.reference %></p>
+              <p class="text-white/80 truncate"><%= order.user.email %></p>
+            </div>
+            <div class="text-right shrink-0 ml-2">
+              <p class="font-medium"><%= naira(order.total_kobo) %></p>
+              <p class="text-[10px] text-white/40 capitalize"><%= order.status %></p>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-white/40">No orders yet.</p>
+    <% end %>
+  </div>
+
   <div class="card p-6">
     <div class="flex items-center justify-between mb-5">
       <h2 class="font-display text-xl font-bold">Recent bookings</h2>
-      <%= link_to "View all →", admin_bookings_path, class: "text-xs text-white/50 hover:text-white" %>
+      <%= link_to "All →", admin_bookings_path, class: "text-xs text-white/50 hover:text-white" %>
     </div>
     <% if @recent_bookings.any? %>
       <ul class="divide-y divide-white/5">
         <% @recent_bookings.each do |booking| %>
-          <li class="py-3 flex items-center justify-between">
-            <div>
-              <p class="font-medium text-sm"><%= booking.reference %></p>
-              <p class="text-xs text-white/50"><%= booking.user.email %> · <%= booking.bookable_type.underscore.humanize %></p>
+          <li class="py-2.5 flex items-center justify-between text-sm">
+            <div class="min-w-0">
+              <p class="font-mono text-xs text-white/40"><%= booking.reference %></p>
+              <p class="text-white/80 truncate"><%= booking.bookable_type.underscore.humanize %></p>
             </div>
-            <div class="text-right">
-              <p class="text-sm font-medium"><%= naira(booking.total_price_kobo) %></p>
-              <p class="text-xs text-white/40"><%= booking.status %></p>
+            <div class="text-right shrink-0 ml-2">
+              <p class="font-medium"><%= naira(booking.total_price_kobo) %></p>
+              <p class="text-[10px] text-white/40"><%= booking.status %></p>
             </div>
           </li>
         <% end %>
       </ul>
     <% else %>
       <p class="text-sm text-white/40">No bookings yet.</p>
-    <% end %>
-  </div>
-
-  <div class="card p-6">
-    <div class="flex items-center justify-between mb-5">
-      <h2 class="font-display text-xl font-bold">Upcoming screenings</h2>
-      <%= link_to "Manage →", admin_screenings_path, class: "text-xs text-white/50 hover:text-white" %>
-    </div>
-    <% if @upcoming_screenings.any? %>
-      <ul class="space-y-3">
-        <% @upcoming_screenings.each do |screening| %>
-          <li class="flex items-center justify-between">
-            <div>
-              <p class="font-medium text-sm"><%= screening.title %></p>
-              <p class="text-xs text-white/50"><%= screening.starts_at.strftime("%a %b %d · %I:%M %p") %> · <%= screening.screen.name %></p>
-            </div>
-            <span class="chip bg-blaze-amber/10 text-blaze-amber"><%= naira(screening.price_kobo) %></span>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="text-sm text-white/40">No upcoming screenings.</p>
     <% end %>
   </div>
 </section>

@@ -25,6 +25,14 @@ Rails.application.routes.draw do
     member { post :cancel }
   end
 
+  # Cart + food orders
+  resource  :cart, only: [ :show, :destroy ] do
+    post   :add,    to: "carts#add",    as: :add
+    patch  :update, to: "carts#update", as: :update
+    delete "remove/:menu_item_id", to: "carts#remove", as: :remove
+  end
+  resources :orders, only: [ :index, :new, :create, :show ]
+
   # Payments (Paystack)
   get  "/payments/callback",    to: "payments#callback", as: :payments_callback
   get  "/payments/:id/success", to: "payments#success",  as: :success_payment
@@ -51,6 +59,13 @@ Rails.application.routes.draw do
     resources :screens
     resources :screenings
     resources :bookings, only: [ :index, :show, :update ]
+    resources :orders, only: [ :index, :show, :update ] do
+      member do
+        patch :mark_dispatched
+        patch :mark_delivered
+      end
+    end
+    resources :offline_sales
     resources :users, only: [ :index, :edit, :update ]
   end
 

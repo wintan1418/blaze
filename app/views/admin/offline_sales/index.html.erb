@@ -1,0 +1,97 @@
+<% content_for :page_title, "Offline Sales" %>
+<%= render "admin/shared/page_header", title: "Offline Sales", subtitle: "Walk-in & in-person transactions",
+      action_label: "+ Record sale", action_path: new_admin_offline_sale_path %>
+
+<!-- Totals row -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-5">
+    <p class="label-blaze">Sales</p>
+    <p class="font-display text-4xl font-bold fire-text mt-2"><%= @totals[:count] %></p>
+    <p class="text-xs text-white/50 mt-1">in selected range</p>
+  </div>
+  <div class="card p-5">
+    <p class="label-blaze">Revenue</p>
+    <p class="font-display text-4xl font-bold fire-text mt-2"><%= naira(@totals[:revenue]) %></p>
+    <p class="text-xs text-white/50 mt-1">total takings</p>
+  </div>
+  <% @totals[:by_method].take(2).each do |method, sum| %>
+    <div class="card p-5">
+      <p class="label-blaze"><%= method.humanize %></p>
+      <p class="font-display text-2xl font-bold mt-2"><%= naira(sum) %></p>
+      <p class="text-xs text-white/50 mt-1">by <%= method %></p>
+    </div>
+  <% end %>
+</div>
+
+<!-- Filter bar -->
+<%= form_with url: admin_offline_sales_path, method: :get, class: "card p-4 mb-6 flex flex-wrap items-end gap-3" do %>
+  <div>
+    <label class="label-blaze">From</label>
+    <input type="date" name="from" value="<%= @from %>" class="input-blaze">
+  </div>
+  <div>
+    <label class="label-blaze">To</label>
+    <input type="date" name="to" value="<%= @to %>" class="input-blaze">
+  </div>
+  <div>
+    <label class="label-blaze">Location</label>
+    <select name="location_id" class="input-blaze">
+      <option value="">All locations</option>
+      <% Location.order(:name).each do |loc| %>
+        <option value="<%= loc.id %>" <%= "selected" if params[:location_id].to_s == loc.id.to_s %>><%= loc.name %></option>
+      <% end %>
+    </select>
+  </div>
+  <div>
+    <label class="label-blaze">Method</label>
+    <select name="payment_method" class="input-blaze">
+      <option value="">Any</option>
+      <% OfflineSale::PAYMENT_METHODS.each do |m| %>
+        <option value="<%= m %>" <%= "selected" if params[:payment_method] == m %>><%= m.humanize %></option>
+      <% end %>
+    </select>
+  </div>
+  <%= submit_tag "Filter", class: "btn-primary text-sm" %>
+  <%= link_to "Reset", admin_offline_sales_path, class: "text-white/50 hover:text-white text-sm self-center" %>
+<% end %>
+
+<!-- Sales table -->
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">When</th>
+        <th class="text-left px-6 py-3">Item</th>
+        <th class="text-left px-6 py-3">Qty</th>
+        <th class="text-left px-6 py-3">Unit</th>
+        <th class="text-left px-6 py-3">Total</th>
+        <th class="text-left px-6 py-3">Method</th>
+        <th class="text-left px-6 py-3">Location</th>
+        <th class="text-left px-6 py-3">By</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @sales.each do |sale| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4 text-white/60 text-xs"><%= sale.sold_at.strftime("%b %d · %I:%M %p") %></td>
+          <td class="px-6 py-4 font-medium"><%= sale.label %></td>
+          <td class="px-6 py-4"><%= sale.quantity %></td>
+          <td class="px-6 py-4"><%= naira(sale.unit_price_kobo) %></td>
+          <td class="px-6 py-4 font-display font-bold fire-text"><%= naira(sale.total_kobo) %></td>
+          <td class="px-6 py-4"><span class="chip bg-blaze-smoke border border-white/10"><%= sale.payment_method.humanize %></span></td>
+          <td class="px-6 py-4 text-white/60"><%= sale.location&.name || "—" %></td>
+          <td class="px-6 py-4 text-white/50 text-xs"><%= sale.recorded_by.display_name %></td>
+          <td class="px-6 py-4 text-right space-x-2">
+            <%= link_to "Edit", edit_admin_offline_sale_path(sale), class: "text-blaze-amber hover:text-white" %>
+            <%= button_to "×", admin_offline_sale_path(sale), method: :delete,
+                  class: "text-white/40 hover:text-red-400",
+                  form: { data: { turbo_confirm: "Remove this sale?" }, class: "inline" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6"><%= blaze_pagy_nav(@pagy) %></div>

@@ -1,0 +1,128 @@
+<% content_for :page_title, "Checkout" %>
+
+<section class="max-w-5xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← Back to cart", cart_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="mt-8">
+    <span class="chip bg-blaze-red/10 text-blaze-red">Checkout</span>
+    <h1 class="font-display text-5xl md:text-6xl font-black mt-4">Almost <span class="fire-text italic">there</span>.</h1>
+  </div>
+
+  <%= form_with model: @order, url: orders_path, class: "mt-10 grid lg:grid-cols-3 gap-8",
+        data: { controller: "fulfillment" } do |f| %>
+    <% if @order.errors.any? %>
+      <div class="lg:col-span-3 card p-4 border-red-500/30 bg-red-500/5">
+        <ul class="text-xs text-red-300/80 list-disc list-inside">
+          <% @order.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- LEFT: Details -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="card p-6 space-y-5">
+        <h3 class="font-display text-lg font-bold">Fulfillment</h3>
+        <div class="grid grid-cols-<%= site_setting.delivery_enabled ? 3 : 2 %> gap-3">
+          <% types = Order::FULFILLMENT_TYPES.dup %>
+          <% types.delete("delivery") unless site_setting.delivery_enabled %>
+          <% types.each do |type| %>
+            <% hint = case type
+               when "pickup"  then "Collect at the counter"
+               when "dine_in" then "Eat in at a Blaze table"
+               when "delivery" then "We bring it to you"
+               end %>
+            <label class="relative">
+              <%= f.radio_button :fulfillment, type,
+                    class: "peer sr-only",
+                    checked: (type == @order.fulfillment),
+                    data: { action: "change->fulfillment#toggle" } %>
+              <div class="p-4 rounded-xl border border-white/10 bg-blaze-smoke/50 cursor-pointer peer-checked:border-blaze-red peer-checked:bg-blaze-red/10 transition">
+                <p class="font-medium capitalize"><%= type.humanize %></p>
+                <p class="text-xs text-white/50 mt-1"><%= hint %></p>
+              </div>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card p-6 space-y-5">
+        <h3 class="font-display text-lg font-bold">Location</h3>
+        <%= f.collection_select :location_id, Location.active, :id, :name, {}, class: "input-blaze" %>
+        <p class="text-xs text-white/40">For pickup, this is where you'll collect. For delivery, we dispatch from the nearest branch.</p>
+      </div>
+
+      <!-- Delivery address — Stimulus hides this when non-delivery is selected -->
+      <div class="card p-6 space-y-5" data-fulfillment-target="delivery">
+        <div class="flex items-start justify-between">
+          <h3 class="font-display text-lg font-bold">Delivery address</h3>
+          <% if site_setting.delivery_fee_kobo.to_i > 0 %>
+            <span class="chip bg-blaze-amber/10 text-blaze-amber"><%= naira(site_setting.delivery_fee_kobo) %> delivery</span>
+          <% end %>
+        </div>
+        <% if site_setting.delivery_note.present? %>
+          <p class="text-xs text-white/50"><%= site_setting.delivery_note %></p>
+        <% end %>
+        <div>
+          <%= f.label :delivery_address, "Street address", class: "label-blaze" %>
+          <%= f.text_area :delivery_address, rows: 2, class: "input-blaze", placeholder: "House 12, Oba Adesida Rd, apartment B..." %>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <%= f.label :delivery_city, "City / area", class: "label-blaze" %>
+            <%= f.text_field :delivery_city, class: "input-blaze", placeholder: "Akure" %>
+          </div>
+          <div>
+            <%= f.label :delivery_phone, "Contact phone", class: "label-blaze" %>
+            <%= f.telephone_field :delivery_phone, class: "input-blaze", placeholder: "+234..." %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-6 space-y-5">
+        <h3 class="font-display text-lg font-bold">Notes (optional)</h3>
+        <%= f.text_area :notes, rows: 3, placeholder: "Extra plantain, no onions, ring buzzer, etc.", class: "input-blaze" %>
+      </div>
+    </div>
+
+    <!-- RIGHT: Summary -->
+    <div class="lg:col-span-1">
+      <div class="card p-6 sticky top-28">
+        <h3 class="font-display text-lg font-bold">Your order</h3>
+        <ul class="mt-5 space-y-3">
+          <% @cart_lines.each do |line| %>
+            <li class="flex justify-between text-sm">
+              <span class="text-white/80"><%= line.quantity %>× <%= line.menu_item.name %></span>
+              <span class="text-white/60"><%= naira(line.subtotal_kobo) %></span>
+            </li>
+          <% end %>
+        </ul>
+        <div class="mt-5 pt-5 border-t border-white/10 space-y-2 text-sm">
+          <div class="flex justify-between text-white/70">
+            <span>Subtotal</span>
+            <span><%= naira(@cart.total_kobo) %></span>
+          </div>
+          <div class="flex justify-between text-white/70" data-fulfillment-target="deliveryFee">
+            <span>Delivery fee</span>
+            <span>
+              <% fee = site_setting.delivery_fee_for(@cart.total_kobo) %>
+              <%= fee.zero? ? "Free" : naira(fee) %>
+            </span>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-white/10 flex items-baseline justify-between">
+          <span class="label-blaze">Total</span>
+          <span class="font-display text-2xl font-bold fire-text">
+            <%= naira(@cart.total_kobo + site_setting.delivery_fee_for(@cart.total_kobo)) %>
+          </span>
+        </div>
+
+        <% if PaystackClient.configured? %>
+          <%= f.submit "Pay with Paystack", class: "btn-primary w-full mt-6" %>
+          <p class="text-xs text-white/40 text-center mt-2">Cards · bank transfer · USSD</p>
+        <% else %>
+          <%= f.submit "Place order (pay at counter)", class: "btn-primary w-full mt-6" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</section>

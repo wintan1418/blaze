@@ -30,12 +30,14 @@ class PaymentsController < ApplicationController
   def success
     @payment = current_user.payments.find(params[:id])
     @booking = @payment.payable if @payment.payable.is_a?(Booking)
+    @order   = @payment.payable if @payment.payable.is_a?(Order)
   end
 
   # GET /payments/:id/failed
   def failed
     @payment = current_user.payments.find(params[:id])
     @booking = @payment.payable if @payment.payable.is_a?(Booking)
+    @order   = @payment.payable if @payment.payable.is_a?(Order)
   end
 
   # POST /payments/webhook
@@ -68,19 +70,22 @@ class PaymentsController < ApplicationController
     result = PaystackClient.verify_transaction(payment.reference)
 
     if result[:success] && result[:amount_kobo] >= payment.amount_kobo
-      Booking.transaction do
+      ActiveRecord::Base.transaction do
         payment.mark_success!(
           provider_reference: result[:provider_reference],
           channel: result[:channel],
           paid_at: result[:paid_at] || Time.current,
           metadata: { paystack: result[:raw] }
         )
-        if payment.payable.is_a?(Booking)
-          payment.payable.mark_paid!(at: result[:paid_at] || Time.current)
-          # Reserve the slot so it's not double-booked
-          if payment.payable.bookable.is_a?(GamingSlot)
-            payment.payable.bookable.update(status: "reserved")
+        payable = payment.payable
+        case payable
+        when Booking
+          payable.mark_paid!(at: result[:paid_at] || Time.current)
+          if payable.bookable.is_a?(GamingSlot)
+            payable.bookable.update(status: "reserved")
           end
+        when Order
+          payable.mark_paid!(at: result[:paid_at] || Time.current)
         end
       end
     else

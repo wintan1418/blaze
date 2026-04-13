@@ -1,0 +1,37 @@
+<% content_for :page_title, "My Orders" %>
+
+<section class="max-w-5xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <span class="chip bg-blaze-red/10 text-blaze-red">Your orders</span>
+  <h1 class="font-display text-5xl md:text-6xl font-black mt-4">Order history.</h1>
+
+  <% if @orders.any? %>
+    <div class="mt-12 space-y-4">
+      <% @orders.each do |order| %>
+        <%= link_to order_path(order), class: "card p-6 block hover:border-blaze-red/30 transition" do %>
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3">
+                <p class="font-mono text-xs text-white/40"><%= order.reference %></p>
+                <% case order.status
+                   when "completed" %><span class="chip bg-emerald-500/10 text-emerald-300">Completed</span>
+                <% when "cancelled" %><span class="chip bg-white/5 text-white/40">Cancelled</span>
+                <% when "preparing" %><span class="chip bg-blaze-amber/10 text-blaze-amber">Preparing</span>
+                <% when "ready"     %><span class="chip bg-sky-500/10 text-sky-300">Ready</span>
+                <% else %><span class="chip bg-white/5 text-white/60">Pending</span><% end %>
+              </div>
+              <h3 class="font-display text-xl font-bold mt-2"><%= order.item_count %> items · <%= order.fulfillment.humanize %></h3>
+              <p class="text-sm text-white/50 mt-1"><%= order.created_at.strftime("%a %b %d · %I:%M %p") %></p>
+            </div>
+            <p class="font-display text-2xl font-bold fire-text"><%= naira(order.total_kobo) %></p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="mt-12 flex justify-center"><%= blaze_pagy_nav(@pagy) %></div>
+  <% else %>
+    <div class="card p-12 text-center mt-12">
+      <p class="text-white/50">No orders yet.</p>
+      <%= link_to "Browse the menu", menu_items_path, class: "btn-primary mt-6 inline-flex" %>
+    </div>
+  <% end %>
+</section>

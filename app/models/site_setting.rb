@@ -53,6 +53,13 @@ class SiteSetting < ApplicationRecord
     "https://fonts.googleapis.com/css2?#{families.map { |f| "family=#{f}" }.join('&')}&display=swap"
   end
 
+  # Delivery fee for this order's subtotal, respecting free-over threshold.
+  def delivery_fee_for(subtotal_kobo)
+    return 0 unless delivery_enabled
+    return 0 if delivery_free_over_kobo.to_i > 0 && subtotal_kobo.to_i >= delivery_free_over_kobo.to_i
+    delivery_fee_kobo.to_i
+  end
+
   # Returns CSS custom property overrides for :root.
   def css_variables
     {

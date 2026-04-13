@@ -25,10 +25,16 @@
         </div>
       <% end %>
 
-      <div class="mt-10 flex gap-3">
-        <%= link_to "Order at the counter", contact_path, class: "btn-primary" %>
-        <%= link_to "← More from #{@item.menu_category.name}", menu_items_path(category: @item.menu_category.slug), class: "btn-ghost" %>
-      </div>
+      <%= form_with url: add_cart_path, method: :post, class: "mt-10" do |f| %>
+        <%= f.hidden_field :menu_item_id, value: @item.id %>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 p-1 rounded-full border border-white/10 bg-blaze-smoke">
+            <input type="number" name="qty" value="1" min="1" max="99" class="w-14 bg-transparent text-center text-white font-display text-lg focus:outline-none">
+          </div>
+          <%= f.submit "Add to cart", class: "btn-primary" %>
+          <%= link_to "More #{@item.menu_category.name.downcase}", menu_items_path(category: @item.menu_category.slug), class: "btn-ghost" %>
+        </div>
+      <% end %>
     </div>
   </div>
 

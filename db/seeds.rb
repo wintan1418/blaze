@@ -584,29 +584,98 @@ films.each_with_index do |film, film_idx|
 end
 puts "  ✓ Screenings: #{Screening.count}"
 
-# ------------------------------------------------------------ Sample bookings (a few so dashboards aren't empty)
-if Booking.count < 3
-  ada = User.find_by(email: "ada@example.ng")
-  kunle = User.find_by(email: "kunle@example.ng")
+# ------------------------------------------------------------ Sample history (so dashboards + charts have data)
+# Seeds realistic paid bookings, paid online orders, and offline sales spread
+# across the last 30 days so the analytics dashboard lights up immediately.
 
-  # A confirmed gaming booking
-  slot = GamingSlot.available.upcoming.first
-  if slot && ada
-    b = slot.bookings.build(seats: 1, notes: "Bringing my own headset.", status: "confirmed")
-    b.user = ada
-    if b.save
-      slot.update(status: "reserved")
-      puts "  ✓ Sample booking: #{b.reference} (gaming)"
+customers = User.customer.to_a
+ada   = User.find_by(email: "ada@example.ng")   || customers.first
+kunle = User.find_by(email: "kunle@example.ng") || customers.last
+
+# --- Paid bookings (gaming + cinema) across the last 30 days
+if Booking.paid.count < 10
+  [ ada, kunle ].compact.each do |user|
+    5.times do |i|
+      # Gaming booking
+      slot = GamingSlot.where.not(id: Booking.pluck(:bookable_id)).available.order("RANDOM()").first
+      if slot
+        days_ago = rand(1..28)
+        paid = days_ago.days.ago + rand(10..20).hours
+        b = slot.bookings.build(seats: 1, notes: "Seeded", status: "confirmed")
+        b.user = user
+        b.payment_status = "paid"
+        b.paid_at = paid
+        b.created_at = paid
+        if b.save
+          b.update_columns(paid_at: paid, created_at: paid)
+          slot.update(status: "reserved")
+        end
+      end
+      # Cinema booking
+      screening = Screening.order("RANDOM()").first
+      if screening && screening.seats_remaining >= 2
+        days_ago = rand(1..28)
+        paid = days_ago.days.ago + rand(18..21).hours
+        b = screening.bookings.build(seats: 2, notes: "Seeded", status: "confirmed")
+        b.user = user
+        b.payment_status = "paid"
+        b.paid_at = paid
+        b.created_at = paid
+        if b.save
+          b.update_columns(paid_at: paid, created_at: paid)
+        end
+      end
     end
   end
+  puts "  ✓ Seeded paid bookings: #{Booking.paid.count}"
+end
 
-  # A pending cinema booking
-  screening = Screening.upcoming.first
-  if screening && kunle
-    b = screening.bookings.build(seats: 2, notes: "Back row please.", status: "pending")
-    b.user = kunle
-    puts "  ✓ Sample booking: #{b.reference} (cinema)" if b.save
+# --- Paid food orders
+if Order.paid.count < 12
+  customers.each do |user|
+    3.times do
+      days_ago = rand(0..28)
+      paid = days_ago.days.ago + rand(8..22).hours
+      order = user.orders.build(
+        location: Location.active.order("RANDOM()").first,
+        fulfillment: %w[pickup dine_in delivery].sample,
+        payment_status: "paid",
+        status: "completed",
+        notes: "Seeded",
+        delivery_address: "Oba Adesida Rd, Akure",
+        delivery_city: "Akure",
+        delivery_phone: user.phone
+      )
+      MenuItem.available.order("RANDOM()").limit(rand(1..4)).each do |item|
+        order.order_items.build(menu_item: item, quantity: rand(1..3))
+      end
+      if order.save
+        order.update_columns(paid_at: paid, created_at: paid)
+      end
+    end
   end
+  puts "  ✓ Seeded paid orders: #{Order.paid.count}"
+end
+
+# --- Offline sales (walk-ins) over the last 30 days
+if OfflineSale.count < 40
+  admin_user = User.admin.first
+  menu_items_list = MenuItem.available.to_a
+  30.times do
+    item = menu_items_list.sample
+    sold = rand(0..29).days.ago + rand(9..22).hours
+    OfflineSale.create!(
+      menu_item: item,
+      location: Location.active.order("RANDOM()").first,
+      recorded_by: admin_user,
+      quantity: rand(1..5),
+      unit_price_kobo: item.price_kobo,
+      payment_method: %w[cash card transfer pos].sample,
+      sold_at: sold,
+      notes: "Seeded"
+    )
+  end
+  puts "  ✓ Seeded offline sales: #{OfflineSale.count}"
 end
 
 # ------------------------------------------------------------ Summary

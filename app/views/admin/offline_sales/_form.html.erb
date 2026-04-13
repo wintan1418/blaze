@@ -1,0 +1,56 @@
+<%= form_with model: [ :admin, @sale ], class: "space-y-6 max-w-2xl" do |f| %>
+  <% if @sale.errors.any? %>
+    <div class="card p-4 border-red-500/30 bg-red-500/5">
+      <ul class="text-xs text-red-300/80 list-disc list-inside">
+        <% @sale.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card p-6 grid md:grid-cols-2 gap-5">
+    <div class="md:col-span-2">
+      <label class="label-blaze">Menu item (optional — leave blank for a custom entry)</label>
+      <%= f.collection_select :menu_item_id,
+            MenuItem.includes(:menu_category).order(:name),
+            :id,
+            ->(i) { "#{i.name} — #{i.menu_category.name} — ₦#{i.price_kobo / 100}" },
+            { include_blank: "— custom / off-menu item —" },
+            { class: "input-blaze" } %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Description (for custom items)</label>
+      <%= f.text_field :description, class: "input-blaze", placeholder: "e.g. custom birthday platter" %>
+    </div>
+    <div>
+      <label class="label-blaze">Quantity</label>
+      <%= f.number_field :quantity, min: 1, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Unit price (kobo)</label>
+      <%= f.number_field :unit_price_kobo, step: 100, min: 0, class: "input-blaze" %>
+      <p class="text-xs text-white/40 mt-1">Will auto-fill from menu item if linked and blank.</p>
+    </div>
+    <div>
+      <label class="label-blaze">Payment method</label>
+      <%= f.select :payment_method, OfflineSale::PAYMENT_METHODS.map { |m| [ m.humanize, m ] }, {}, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Location</label>
+      <%= f.collection_select :location_id, Location.order(:name), :id, :name,
+            { include_blank: "— none —" }, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Sold at</label>
+      <%= f.datetime_local_field :sold_at, value: @sale.sold_at&.strftime("%Y-%m-%dT%H:%M"), class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Notes</label>
+      <%= f.text_area :notes, rows: 2, class: "input-blaze" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "btn-primary" %>
+    <%= link_to "Cancel", admin_offline_sales_path, class: "text-white/50 hover:text-white text-sm" %>
+  </div>
+<% end %>

@@ -83,29 +83,42 @@ class PaystackClient
       request(Net::HTTP::Get, path)
     end
 
-    def request(klass, path)
-      uri = URI.join(API_BASE, path)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.read_timeout = 15
-      http.open_timeout = 10
+    MAX_ATTEMPTS = 4
 
-      req = klass.new(uri.request_uri)
-      req["Authorization"] = "Bearer #{secret_key}"
-      req["Content-Type"]  = "application/json"
-      req["Accept"]        = "application/json"
-      yield req if block_given?
+    def request(klass, path, &block)
+      attempts = 0
+      begin
+        attempts += 1
+        uri = URI.join(API_BASE, path)
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.read_timeout = 30
+        http.open_timeout = 15
+        http.ssl_timeout  = 15
 
-      res = http.request(req)
-      parsed = JSON.parse(res.body.to_s)
-      unless res.is_a?(Net::HTTPSuccess)
-        raise Error, "Paystack #{res.code}: #{parsed['message'] || res.body}"
+        req = klass.new(uri.request_uri)
+        req["Authorization"] = "Bearer #{secret_key}"
+        req["Content-Type"]  = "application/json"
+        req["Accept"]        = "application/json"
+        block&.call(req)
+
+        res = http.request(req)
+        parsed = JSON.parse(res.body.to_s)
+        unless res.is_a?(Net::HTTPSuccess)
+          raise Error, "Paystack #{res.code}: #{parsed['message'] || res.body}"
+        end
+        parsed
+      rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNRESET => e
+        if attempts < MAX_ATTEMPTS
+          delay = 0.5 * (2**(attempts - 1)) # 0.5s, 1s, 2s
+          Rails.logger.warn("[Paystack] #{e.class} on attempt #{attempts}/#{MAX_ATTEMPTS}, retrying in #{delay}s")
+          sleep delay
+          retry
+        end
+        raise Error, "Could not reach Paystack — please check your connection and try again (#{e.class})"
+      rescue JSON::ParserError
+        raise Error, "Paystack returned invalid JSON"
       end
-      parsed
-    rescue JSON::ParserError
-      raise Error, "Paystack returned invalid JSON"
-    rescue Net::OpenTimeout, Net::ReadTimeout => e
-      raise Error, "Paystack timeout: #{e.message}"
     end
   end
 end

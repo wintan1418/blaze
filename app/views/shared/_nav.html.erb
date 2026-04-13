@@ -19,8 +19,20 @@
     </nav>
 
     <div class="flex items-center gap-3">
+      <% cart_count = Cart.new(session).total_items %>
+      <%= link_to cart_path, class: "relative w-10 h-10 rounded-full border border-white/10 grid place-items-center text-white/70 hover:text-white hover:border-blaze-red/40 transition" do %>
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        <% if cart_count > 0 %>
+          <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blaze-red text-white text-[10px] font-bold grid place-items-center"><%= cart_count %></span>
+        <% end %>
+      <% end %>
+
       <% if user_signed_in? %>
-        <%= link_to "My Bookings", bookings_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
+        <%= link_to "Orders", orders_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
+        <%= link_to "Bookings", bookings_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
         <% if current_user.admin? %>
           <%= link_to "Admin", admin_root_path, class: "hidden sm:inline text-sm text-blaze-amber hover:text-white transition" %>
         <% end %>

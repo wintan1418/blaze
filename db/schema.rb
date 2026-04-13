@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_220811) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_225829) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -147,6 +147,67 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_220811) do
     t.index ["slug"], name: "index_menu_items_on_slug", unique: true
   end
 
+  create_table "offline_sales", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "location_id"
+    t.bigint "menu_item_id"
+    t.text "notes"
+    t.string "payment_method", default: "cash", null: false
+    t.integer "quantity", default: 1, null: false
+    t.bigint "recorded_by_id", null: false
+    t.datetime "sold_at", null: false
+    t.integer "total_kobo", default: 0, null: false
+    t.integer "unit_price_kobo", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_offline_sales_on_location_id"
+    t.index ["menu_item_id"], name: "index_offline_sales_on_menu_item_id"
+    t.index ["payment_method"], name: "index_offline_sales_on_payment_method"
+    t.index ["recorded_by_id"], name: "index_offline_sales_on_recorded_by_id"
+    t.index ["sold_at"], name: "index_offline_sales_on_sold_at"
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "menu_item_id", null: false
+    t.string "name_snapshot"
+    t.bigint "order_id", null: false
+    t.integer "quantity", default: 1
+    t.integer "unit_price_kobo", default: 0
+    t.datetime "updated_at", null: false
+    t.index ["menu_item_id"], name: "index_order_items_on_menu_item_id"
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.text "delivery_address"
+    t.string "delivery_city"
+    t.integer "delivery_fee_kobo", default: 0, null: false
+    t.text "delivery_notes"
+    t.string "delivery_phone"
+    t.string "delivery_status", default: "none", null: false
+    t.datetime "dispatched_at"
+    t.string "fulfillment", default: "pickup", null: false
+    t.bigint "location_id", null: false
+    t.text "notes"
+    t.datetime "paid_at"
+    t.string "payment_status", default: "unpaid", null: false
+    t.string "reference"
+    t.string "status", default: "pending", null: false
+    t.integer "subtotal_kobo", default: 0, null: false
+    t.integer "total_kobo", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["delivery_status"], name: "index_orders_on_delivery_status"
+    t.index ["location_id"], name: "index_orders_on_location_id"
+    t.index ["payment_status"], name: "index_orders_on_payment_status"
+    t.index ["reference"], name: "index_orders_on_reference", unique: true
+    t.index ["status"], name: "index_orders_on_status"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
   create_table "payments", force: :cascade do |t|
     t.integer "amount_kobo", null: false
     t.string "authorization_url"
@@ -223,6 +284,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_220811) do
     t.datetime "created_at", null: false
     t.text "cta_body", default: "Book a PlayStation session, reserve cinema seats, or just swing by. We're open daily from 10am."
     t.string "cta_headline", default: "Ready to come alive?"
+    t.boolean "delivery_enabled", default: true, null: false
+    t.integer "delivery_fee_kobo", default: 50000, null: false
+    t.integer "delivery_free_over_kobo", default: 0, null: false
+    t.text "delivery_note"
+    t.integer "delivery_radius_km", default: 15, null: false
     t.string "dishes_eyebrow", default: "Signature dishes"
     t.string "dishes_headline", default: "Plates that slap."
     t.string "display_font", default: "Space Grotesk", null: false
@@ -281,6 +347,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_220811) do
   add_foreign_key "gaming_consoles", "locations"
   add_foreign_key "gaming_slots", "gaming_consoles"
   add_foreign_key "menu_items", "menu_categories"
+  add_foreign_key "offline_sales", "locations"
+  add_foreign_key "offline_sales", "menu_items"
+  add_foreign_key "offline_sales", "users", column: "recorded_by_id"
+  add_foreign_key "order_items", "menu_items"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "orders", "locations"
+  add_foreign_key "orders", "users"
   add_foreign_key "payments", "users"
   add_foreign_key "reviews", "users"
   add_foreign_key "screenings", "screens"

@@ -41,7 +41,9 @@ module Admin
         :cta_headline, :cta_body,
         :about_eyebrow, :about_headline, :about_body,
         :contact_eyebrow, :contact_headline, :contact_body,
-        :footer_tagline
+        :footer_tagline,
+        # Delivery
+        :delivery_enabled, :delivery_fee_kobo, :delivery_free_over_kobo, :delivery_radius_km, :delivery_note
       )
 
       # Color inputs come in as "#E8341A"; strip the leading # before saving

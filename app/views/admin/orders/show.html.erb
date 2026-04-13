@@ -1,0 +1,101 @@
+<% content_for :page_title, "Order #{@order.reference}" %>
+<%= render "admin/shared/page_header", title: @order.reference, subtitle: "Food order details" %>
+
+<div class="grid md:grid-cols-3 gap-6">
+  <div class="md:col-span-2 card p-6 space-y-5">
+    <div>
+      <p class="label-blaze">Customer</p>
+      <p class="font-medium"><%= @order.user.display_name %></p>
+      <p class="text-sm text-white/50"><%= @order.user.email %> · <%= @order.user.phone %></p>
+    </div>
+
+    <div>
+      <p class="label-blaze">Items</p>
+      <ul class="mt-2 space-y-2">
+        <% @order.order_items.includes(:menu_item).each do |item| %>
+          <li class="flex justify-between text-sm">
+            <span><%= item.quantity %>× <%= item.name_snapshot %></span>
+            <span class="text-white/60"><%= naira(item.subtotal_kobo) %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="pt-4 border-t border-white/10 space-y-2 text-sm">
+      <div class="flex justify-between text-white/70">
+        <span>Subtotal</span>
+        <span><%= naira(@order.subtotal_kobo) %></span>
+      </div>
+      <% if @order.delivery_fee_kobo.to_i > 0 %>
+        <div class="flex justify-between text-white/70">
+          <span>Delivery fee</span>
+          <span><%= naira(@order.delivery_fee_kobo) %></span>
+        </div>
+      <% end %>
+      <div class="flex justify-between pt-2 border-t border-white/5">
+        <span class="label-blaze">Total</span>
+        <span class="font-display text-2xl font-bold fire-text"><%= naira(@order.total_kobo) %></span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+      <div>
+        <p class="label-blaze">Fulfillment</p>
+        <p class="font-medium capitalize"><%= @order.fulfillment.humanize %></p>
+      </div>
+      <div>
+        <p class="label-blaze">Location</p>
+        <p class="font-medium"><%= @order.location&.name || "—" %></p>
+      </div>
+    </div>
+
+    <% if @order.delivery? %>
+      <div class="pt-4 border-t border-white/10">
+        <p class="label-blaze">Delivery</p>
+        <p class="font-medium mt-2"><%= @order.delivery_address %></p>
+        <p class="text-sm text-white/60"><%= @order.delivery_city %> · <%= @order.delivery_phone %></p>
+        <p class="text-xs text-white/40 mt-1">Status: <span class="capitalize"><%= @order.delivery_status.humanize %></span>
+          <% if @order.dispatched_at %>· dispatched <%= time_ago_in_words(@order.dispatched_at) %> ago<% end %>
+          <% if @order.delivered_at %>· delivered <%= time_ago_in_words(@order.delivered_at) %> ago<% end %>
+        </p>
+      </div>
+    <% end %>
+
+    <% if @order.notes.present? %>
+      <div class="pt-4 border-t border-white/10">
+        <p class="label-blaze">Notes</p>
+        <p class="text-sm text-white/70 mt-2"><%= @order.notes %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="card p-6">
+    <%= form_with model: @order, url: admin_order_path(@order), method: :patch, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :status, class: "label-blaze" %>
+        <%= f.select :status, Order::STATUSES.map { |s| [ s.capitalize, s ] }, {}, class: "input-blaze" %>
+      </div>
+      <div>
+        <%= f.label :payment_status, "Payment", class: "label-blaze" %>
+        <%= f.select :payment_status, Order::PAYMENT_STATUSES.map { |s| [ s.capitalize, s ] }, {}, class: "input-blaze" %>
+      </div>
+      <%= f.submit "Update", class: "btn-primary w-full" %>
+    <% end %>
+
+    <% if @order.delivery? %>
+      <div class="mt-6 pt-5 border-t border-white/10 space-y-2">
+        <p class="label-blaze">Delivery actions</p>
+        <% if @order.delivery_status == "pending" %>
+          <%= button_to "Mark dispatched", mark_dispatched_admin_order_path(@order), method: :patch,
+                class: "btn-ghost w-full text-sm", form: { data: { turbo: false } } %>
+        <% end %>
+        <% if @order.delivery_status == "dispatched" %>
+          <%= button_to "Mark delivered", mark_delivered_admin_order_path(@order), method: :patch,
+                class: "btn-primary w-full text-sm", form: { data: { turbo: false } } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= link_to "← Back to orders", admin_orders_path, class: "block mt-4 text-center text-xs text-white/50 hover:text-white" %>
+  </div>
+</div>

@@ -49,6 +49,19 @@ class TermiiClient
       post("/api/sms/send", body)
     end
 
+    # Convenience: send the Blaze Cafe order confirmation SMS.
+    def send_order_confirmation(order)
+      phone = order.user.phone
+      return { skipped: true, reason: "no phone on user" } if phone.blank?
+
+      items_summary = order.order_items.map { |oi| "#{oi.quantity}x #{oi.name_snapshot}" }.join(", ")
+      location_name = order.location&.name || "Blaze Cafe"
+      amount_naira = order.total_kobo / 100
+
+      message = "BLAZE CAFE: Order #{order.reference} received (₦#{amount_naira}). #{items_summary}. #{order.fulfillment.humanize} @ #{location_name}. We'll text you when it's ready!"
+      send_sms(phone: phone, message: message)
+    end
+
     # Convenience: send the Blaze Cafe booking confirmation SMS.
     def send_booking_confirmation(booking)
       phone = booking.user.phone
