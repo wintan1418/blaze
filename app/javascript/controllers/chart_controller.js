@@ -16,8 +16,8 @@ export default class extends Controller {
   static targets = ["canvas"]
   static values  = {
     type:    { type: String, default: "line" },
-    data:    Object,
-    options: { type: Object, default: () => ({}) }
+    data:    { type: Object, default: {} },
+    options: { type: Object, default: {} }
   }
 
   connect() {
