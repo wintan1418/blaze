@@ -55,19 +55,7 @@
     <span class="chip bg-blaze-red/10 text-blaze-red">30 days</span>
   </div>
   <% if @has_revenue %>
-    <% chart_series = @revenue_timeline.map { |s| { name: s[:name], data: s[:data] } } %>
-    <%= area_chart chart_series,
-          height: "280px",
-          colors: [ "#E8341A", "#F5A623", "#8B5CF6" ],
-          prefix: "₦",
-          thousands: ",",
-          library: {
-            plugins: { legend: { labels: { color: "rgba(255,255,255,0.8)" } } },
-            scales: {
-              x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } },
-              y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } }
-            }
-          } %>
+    <%= blaze_chart :area, @revenue_timeline, height: "280px" %>
   <% else %>
     <div class="relative h-[280px] rounded-2xl border border-dashed border-white/10 grid place-items-center text-center px-6 overflow-hidden">
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(232,52,26,0.08),transparent_60%)]"></div>
@@ -88,15 +76,7 @@
   <div class="card p-6">
     <h2 class="font-display text-xl font-bold mb-4">Revenue by source</h2>
     <% if @revenue_by_source.values.sum > 0 %>
-      <%= pie_chart @revenue_by_source,
-            height: "260px",
-            colors: [ "#E8341A", "#8B5CF6", "#38BDF8", "#F5A623" ],
-            donut: true,
-            prefix: "₦",
-            thousands: ",",
-            library: {
-              plugins: { legend: { position: "bottom", labels: { color: "rgba(255,255,255,0.8)" } } }
-            } %>
+      <%= blaze_chart :doughnut, @revenue_by_source, height: "260px" %>
     <% else %>
       <p class="text-sm text-white/40 py-16 text-center">No revenue recorded in this window yet.</p>
     <% end %>
@@ -108,16 +88,7 @@
       <p class="text-xs text-white/50">Units sold (online orders + offline sales)</p>
     </div>
     <% if @top_items.any? %>
-      <%= bar_chart @top_items,
-            height: "260px",
-            colors: [ "#E8341A" ],
-            library: {
-              plugins: { legend: { display: false } },
-              scales: {
-                x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } },
-                y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.7)" } }
-              }
-            } %>
+      <%= blaze_chart :bar, @top_items, height: "260px" %>
     <% else %>
       <p class="text-sm text-white/40 py-16 text-center">No sales recorded yet.</p>
     <% end %>
@@ -129,18 +100,7 @@
   <div class="card p-6">
     <h2 class="font-display text-xl font-bold mb-4">Revenue by location</h2>
     <% if @revenue_by_location.any? %>
-      <%= column_chart @revenue_by_location,
-            height: "240px",
-            colors: [ "#F5A623" ],
-            prefix: "₦",
-            thousands: ",",
-            library: {
-              plugins: { legend: { display: false } },
-              scales: {
-                x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.6)" } },
-                y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)" } }
-              }
-            } %>
+      <%= blaze_chart :column, @revenue_by_location, height: "240px" %>
     <% else %>
       <p class="text-sm text-white/40 py-12 text-center">No branch revenue yet.</p>
     <% end %>
