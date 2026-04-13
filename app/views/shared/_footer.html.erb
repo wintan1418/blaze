@@ -1,0 +1,46 @@
+<footer class="mt-32 border-t border-white/5 bg-blaze-ash/50">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-20 grid md:grid-cols-4 gap-12">
+    <div class="md:col-span-2">
+      <div class="flex items-center gap-2 mb-6">
+        <% if site_setting.logo_image.attached? %>
+          <%= image_tag site_setting.logo_image, class: "w-9 h-9 rounded-full object-cover" %>
+        <% else %>
+          <span class="w-9 h-9 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-display font-bold text-white"><%= site_setting.logo_mark %></span>
+        <% end %>
+        <span class="font-display font-bold text-xl"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span></span>
+      </div>
+      <p class="text-white/60 max-w-md leading-relaxed"><%= site_setting.footer_tagline %></p>
+      <div class="flex gap-4 mt-6">
+        <% { "IG" => site_setting.instagram_url, "TT" => site_setting.tiktok_url, "X" => site_setting.x_url, "WA" => site_setting.whatsapp_url }.each do |label, url| %>
+          <% next if url.blank? %>
+          <a href="<%= url %>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full border border-white/10 grid place-items-center text-white/70 hover:text-blaze-red hover:border-blaze-red/40 transition text-xs font-semibold"><%= label %></a>
+        <% end %>
+      </div>
+    </div>
+
+    <div>
+      <h4 class="label-blaze">Explore</h4>
+      <ul class="space-y-3 text-white/70 text-sm mt-4">
+        <li><%= link_to "Menu", menu_items_path, class: "hover:text-white transition" %></li>
+        <li><%= link_to "Gaming", gaming_slots_path, class: "hover:text-white transition" %></li>
+        <li><%= link_to "Cinema", screenings_path, class: "hover:text-white transition" %></li>
+        <li><%= link_to "Locations", locations_path, class: "hover:text-white transition" %></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="label-blaze">Visit</h4>
+      <ul class="space-y-3 text-white/70 text-sm mt-4">
+        <% Location.active.limit(3).each do |loc| %>
+          <li><%= loc.name %></li>
+        <% end %>
+        <% if site_setting.contact_phone.present? %><li class="text-white/50"><%= site_setting.contact_phone %></li><% end %>
+        <% if site_setting.contact_email.present? %><li><a href="mailto:<%= site_setting.contact_email %>" class="hover:text-white transition"><%= site_setting.contact_email %></a></li><% end %>
+        <li><%= link_to "Contact", contact_path, class: "hover:text-white transition" %></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/5 py-6 text-center text-xs text-white/40 tracking-widest uppercase">
+    © <%= Date.current.year %> <%= site_setting.site_name %> · Ondo State, Nigeria
+  </div>
+</footer>

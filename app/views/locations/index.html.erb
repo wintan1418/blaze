@@ -1,0 +1,23 @@
+<% content_for :page_title, "Locations" %>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <span class="chip bg-white/5 text-white/70 border border-white/10">Locations</span>
+  <h1 class="font-display text-5xl md:text-7xl font-black mt-6">Find your nearest <span class="fire-text italic">Blaze</span>.</h1>
+  <p class="mt-6 text-lg text-white/60 max-w-2xl">Every branch serves the same menu, the same consoles and the same cinema experience.</p>
+
+  <div class="mt-12 grid md:grid-cols-2 gap-6">
+    <% @locations.each do |location| %>
+      <%= link_to location_path(location), class: "card p-8 hover:-translate-y-1 hover:border-blaze-red/40 transition block" do %>
+        <p class="text-xs uppercase tracking-widest text-blaze-red"><%= location.city %>, Nigeria</p>
+        <h2 class="font-display text-3xl font-bold mt-2"><%= location.name %></h2>
+        <p class="text-white/60 mt-4"><%= location.address %></p>
+        <p class="text-sm text-white/40 mt-1"><%= location.phone %></p>
+        <div class="mt-6 flex gap-4 text-xs text-white/50">
+          <span><%= pluralize(location.gaming_consoles.active.count, "console") %></span>
+          <span>·</span>
+          <span><%= pluralize(location.screens.count, "screen") %></span>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>

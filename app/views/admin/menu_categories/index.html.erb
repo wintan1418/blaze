@@ -1,0 +1,35 @@
+<% content_for :page_title, "Menu Categories" %>
+<%= render "admin/shared/page_header", title: "Menu Categories", subtitle: "How food & drinks are grouped on the site",
+      action_label: "+ New category", action_path: new_admin_menu_category_path %>
+
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">Name</th>
+        <th class="text-left px-6 py-3">Slug</th>
+        <th class="text-left px-6 py-3">Position</th>
+        <th class="text-left px-6 py-3">Items</th>
+        <th class="text-left px-6 py-3">Accent</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @categories.each do |category| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4 font-medium"><%= category.name %></td>
+          <td class="px-6 py-4 text-white/50"><%= category.slug %></td>
+          <td class="px-6 py-4 text-white/50"><%= category.position %></td>
+          <td class="px-6 py-4 text-white/50"><%= category.menu_items.count %></td>
+          <td class="px-6 py-4">
+            <span class="inline-block w-5 h-5 rounded-full" style="background-color: <%= category.accent_color || '#E8341A' %>"></span>
+          </td>
+          <td class="px-6 py-4 text-right space-x-2">
+            <%= link_to "Edit", edit_admin_menu_category_path(category), class: "text-blaze-amber hover:text-white" %>
+            <%= button_to "Delete", admin_menu_category_path(category), method: :delete, class: "text-white/40 hover:text-red-400", form: { data: { turbo_confirm: "Delete this category?" }, class: "inline" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

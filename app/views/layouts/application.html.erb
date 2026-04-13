@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-blaze-ink">
+  <head>
+    <%= display_meta_tags(
+      site: site_setting.site_name,
+      title: content_for?(:page_title) ? content_for(:page_title) : site_setting.tagline,
+      reverse: true,
+      separator: "·",
+      description: site_setting.meta_description.presence || "#{site_setting.site_name} — premium food, drinks, PlayStation gaming and private cinema experiences.",
+      og: {
+        title: :title,
+        site_name: site_setting.site_name,
+        type: "website",
+        description: :description,
+        locale: "en_NG"
+      },
+      twitter: { card: "summary_large_image" }
+    ) %>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#<%= site_setting.ink_color %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="<%= site_setting.google_fonts_href %>" rel="stylesheet">
+
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+
+    <%# Dynamic theme — overrides Tailwind @theme vars at runtime so colors/fonts
+        can be changed from the admin panel without rebuilding assets. %>
+    <style>
+      :root {
+        <% site_setting.css_variables.each do |key, value| %>
+          <%= key %>: <%= value %>;
+        <% end %>
+      }
+    </style>
+  </head>
+
+  <body class="font-body text-zinc-100 antialiased min-h-screen flex flex-col">
+    <%= render "shared/nav" %>
+
+    <%= render "shared/flash" %>
+
+    <main class="flex-1">
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+  </body>
+</html>

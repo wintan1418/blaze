@@ -1,0 +1,36 @@
+<% content_for :page_title, "Gaming Consoles" %>
+<%= render "admin/shared/page_header", title: "Gaming Consoles", subtitle: "PS4 / PS5 units across all locations",
+      action_label: "+ New console", action_path: new_admin_gaming_console_path %>
+
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">Location</th>
+        <th class="text-left px-6 py-3">Number</th>
+        <th class="text-left px-6 py-3">Type</th>
+        <th class="text-left px-6 py-3">Slots</th>
+        <th class="text-left px-6 py-3">Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @consoles.each do |console| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4"><%= console.location.name %></td>
+          <td class="px-6 py-4">#<%= console.number %></td>
+          <td class="px-6 py-4 font-medium"><%= console.console_type %></td>
+          <td class="px-6 py-4 text-white/50"><%= console.gaming_slots.count %></td>
+          <td class="px-6 py-4">
+            <% if console.active %><span class="chip bg-emerald-500/10 text-emerald-300">Active</span>
+            <% else %><span class="chip bg-white/5 text-white/40">Off</span><% end %>
+          </td>
+          <td class="px-6 py-4 text-right space-x-2">
+            <%= link_to "Edit", edit_admin_gaming_console_path(console), class: "text-blaze-amber hover:text-white" %>
+            <%= button_to "Delete", admin_gaming_console_path(console), method: :delete, class: "text-white/40 hover:text-red-400", form: { data: { turbo_confirm: "Delete this console?" }, class: "inline" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

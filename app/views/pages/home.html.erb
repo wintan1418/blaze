@@ -1,0 +1,317 @@
+<% content_for :page_title, site_setting.tagline %>
+
+<!-- ═════════════════════════ HERO (editorial split) ═════════════════════════ -->
+<section class="relative bg-blaze-ink overflow-hidden min-h-[100svh] md:h-screen md:min-h-[760px]">
+
+  <!-- IMAGE LAYER -->
+  <div class="absolute inset-0 md:left-[42%] overflow-hidden"
+       data-controller="carousel"
+       data-carousel-interval-value="6500">
+    <% @hero_slides.each_with_index do |slide, i| %>
+      <div data-carousel-target="slide"
+           class="absolute inset-0 transition-all duration-[2200ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+           style="opacity: <%= i.zero? ? 1 : 0 %>; transform: scale(<%= i.zero? ? 1.01 : 1.08 %>); z-index: <%= i.zero? ? 1 : 0 %>;">
+        <% if slide.display_image_url.present? %>
+          <div class="absolute inset-0 bg-center bg-cover" style="background-image: url('<%= slide.display_image_url %>');"></div>
+        <% end %>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(10,10,11,0.85)_0%,rgba(10,10,11,0.35)_45%,transparent_75%)] hidden md:block"></div>
+        <div class="absolute bottom-10 right-8 lg:bottom-14 lg:right-16 text-right max-w-xs hidden md:block"
+             style="text-shadow: 0 2px 20px rgba(10,10,11,0.8), 0 1px 3px rgba(10,10,11,0.9);">
+          <p class="text-[10px] uppercase tracking-[0.32em] text-white/80 font-medium"><%= slide.kind %></p>
+          <p class="font-display text-2xl lg:text-3xl font-bold mt-2 text-white leading-tight"><%= slide.title %></p>
+          <% if slide.meta.present? %><p class="text-sm text-white/85 mt-1.5"><%= slide.meta %></p><% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- OVERLAY -->
+  <div class="absolute inset-0 bg-linear-to-t from-blaze-ink via-blaze-ink/75 to-blaze-ink/20 md:hidden"></div>
+  <div class="absolute inset-0 hidden md:block bg-linear-to-r from-blaze-ink via-blaze-ink/90 via-30% to-transparent"></div>
+  <div class="absolute inset-0 hidden md:block bg-linear-to-b from-blaze-ink/20 via-transparent to-blaze-ink/40"></div>
+
+  <!-- CONTENT LAYER -->
+  <div class="relative z-10 h-full min-h-[100svh] md:min-h-[760px]">
+    <div class="max-w-[1600px] mx-auto h-full grid grid-cols-12 gap-0">
+      <div class="col-span-12 md:col-span-6 lg:col-span-5 flex flex-col justify-between px-6 md:px-10 lg:px-16 py-10 md:py-14">
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.32em] text-white/50">
+            <span class="w-8 h-px bg-white/30"></span>
+            <span><%= site_setting.hero_eyebrow %></span>
+          </div>
+          <% if site_setting.hero_live_label.present? %>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur text-[11px] uppercase tracking-[0.2em] text-white/70">
+              <span class="relative flex h-1.5 w-1.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blaze-red opacity-75"></span>
+                <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-blaze-red"></span>
+              </span>
+              <%= site_setting.hero_live_label %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="py-14 md:py-0">
+          <h1 class="font-display font-black leading-[0.88] tracking-[-0.035em] text-[18vw] sm:text-[15vw] md:text-[9vw] lg:text-[7.5vw] xl:text-[7rem]">
+            <%= site_setting.hero_headline_line1 %><br>
+            <%= site_setting.hero_headline_line2_html %><span class="text-blaze-red">.</span>
+          </h1>
+
+          <% if site_setting.hero_subtitle.present? %>
+            <p class="mt-8 text-base md:text-lg text-white/65 max-w-md leading-relaxed"><%= site_setting.hero_subtitle %></p>
+          <% end %>
+
+          <div class="mt-10 flex flex-wrap gap-3">
+            <%= link_to menu_items_path, class: "btn-primary" do %>
+              <%= site_setting.hero_cta_primary %>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            <% end %>
+            <%= link_to site_setting.hero_cta_secondary, gaming_slots_path, class: "btn-ghost" %>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] uppercase tracking-[0.32em] text-white/40">
+          <div class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+            <span>Scroll</span>
+          </div>
+          <span class="hidden sm:inline"><%= site_setting.hero_footer_mark %></span>
+        </div>
+      </div>
+
+      <div class="hidden md:block md:col-span-6 lg:col-span-7"></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<section class="border-y border-white/5 bg-blaze-ash/50">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-10 md:py-14 grid grid-cols-2 md:grid-cols-4 gap-y-8">
+    <% [
+      [ MenuItem.count.to_s,             "Signature dishes" ],
+      [ GamingConsole.active.count.to_s, "PS5 / PS4 consoles" ],
+      [ Screen.count.to_s,               "Private cinemas" ],
+      [ Location.active.count.to_s,      "Ondo branches" ]
+    ].each_with_index do |(num, label), i| %>
+      <div class="flex items-baseline gap-4 <%= 'md:border-l md:border-white/5 md:pl-8' unless i.zero? %>">
+        <p class="font-display text-5xl md:text-6xl font-black fire-text leading-none"><%= num %></p>
+        <p class="text-[10px] uppercase tracking-[0.25em] text-white/50 max-w-[8ch] leading-tight"><%= label %></p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- ═════════════════════════ MENU MARQUEE ═════════════════════════ -->
+<% if site_setting.section_enabled?(:menu_marquee) && @menu_strip.any? %>
+  <section class="py-8 border-y border-white/5 bg-blaze-ash/60 overflow-hidden">
+    <div class="marquee">
+      <% 2.times do %>
+        <div class="marquee__track">
+          <% @menu_strip.each do |item| %>
+            <div class="flex items-center gap-4 whitespace-nowrap text-2xl font-display font-semibold text-white/50">
+              <span class="text-blaze-red">◆</span>
+              <%= item.name %>
+              <span class="text-blaze-amber"><%= naira(item.price_kobo) %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ VIBE GALLERY ═════════════════════════ -->
+<% if site_setting.section_enabled?(:vibe_gallery) %>
+  <section class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24 md:py-32" data-controller="reveal">
+    <div class="grid md:grid-cols-12 gap-8 md:gap-12">
+      <div class="md:col-span-5 reveal">
+        <span class="chip bg-blaze-amber/10 text-blaze-amber"><%= site_setting.vibe_eyebrow %></span>
+        <h2 class="font-display text-4xl md:text-6xl font-black mt-4 leading-[0.95]"><%= site_setting.vibe_headline %></h2>
+        <p class="mt-6 text-white/60 text-lg max-w-md leading-relaxed"><%= site_setting.vibe_body %></p>
+        <div class="mt-8 flex gap-4">
+          <%= link_to "See the menu", menu_items_path, class: "btn-primary text-sm" %>
+          <%= link_to "Visit us", locations_path, class: "btn-ghost text-sm" %>
+        </div>
+      </div>
+
+      <div class="md:col-span-7 grid grid-cols-3 gap-3 md:gap-4 h-[560px]">
+        <% urls = vibe_gallery_urls(5) %>
+        <div class="row-span-2 overflow-hidden rounded-3xl reveal">
+          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
+               style="background-image: url('<%= urls[0] %>');"></div>
+        </div>
+        <div class="overflow-hidden rounded-3xl reveal">
+          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
+               style="background-image: url('<%= urls[1] %>');"></div>
+        </div>
+        <div class="overflow-hidden rounded-3xl reveal">
+          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
+               style="background-image: url('<%= urls[2] %>');"></div>
+        </div>
+        <div class="col-span-2 overflow-hidden rounded-3xl reveal">
+          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
+               style="background-image: url('<%= urls[3] %>');"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ FEATURED DISHES ═════════════════════════ -->
+<% if site_setting.section_enabled?(:featured_dishes) %>
+  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-16 md:py-24" data-controller="reveal">
+    <div class="flex items-end justify-between mb-12 reveal">
+      <div>
+        <span class="chip bg-blaze-red/10 text-blaze-red"><%= site_setting.dishes_eyebrow %></span>
+        <h2 class="font-display text-4xl md:text-5xl font-bold mt-4"><%= site_setting.dishes_headline %></h2>
+      </div>
+      <%= link_to "Full menu →", menu_items_path, class: "hidden md:inline text-white/60 hover:text-white transition" %>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @featured_items.each do |item| %>
+        <%= link_to menu_item_path(item), class: "card p-5 group block transition hover:-translate-y-1 hover:border-blaze-red/40 reveal" do %>
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden mb-5 bg-blaze-smoke relative">
+            <% if item.image.attached? %>
+              <%= image_tag item.image, class: "w-full h-full object-cover group-hover:scale-105 transition duration-700" %>
+            <% else %>
+              <div class="w-full h-full grid place-items-center"><span class="font-display text-5xl font-bold text-white/10"><%= site_setting.logo_mark %></span></div>
+            <% end %>
+            <div class="absolute top-3 left-3">
+              <span class="chip bg-black/50 backdrop-blur text-blaze-amber border border-white/10"><%= item.menu_category.name %></span>
+            </div>
+          </div>
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-display text-xl font-bold group-hover:text-blaze-red transition truncate"><%= item.name %></h3>
+              <p class="text-sm text-white/50 mt-2 line-clamp-2"><%= item.description %></p>
+            </div>
+            <p class="font-display text-2xl font-bold whitespace-nowrap"><%= naira(item.price_kobo) %></p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ EXPERIENCES ═════════════════════════ -->
+<% if site_setting.section_enabled?(:experiences) %>
+  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-24" data-controller="reveal">
+    <div class="text-center mb-16 reveal">
+      <span class="chip bg-blaze-amber/10 text-blaze-amber"><%= site_setting.experiences_eyebrow %></span>
+      <h2 class="font-display text-4xl md:text-6xl font-bold mt-4 max-w-3xl mx-auto leading-[0.95]"><%= site_setting.experiences_headline %></h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <% [
+        [ :food,   "Food",                 "Chef-cooked African plates — jollof, suya, grills, seafood pasta and more.", menu_category_path("food"), "bg-blaze-red/10 text-blaze-red" ],
+        [ :drinks, "Drinks",               "Signature smoothies, Nigerian chapman, cold brew and Italian-style espresso.", menu_category_path("drinks"), "bg-blaze-amber/10 text-blaze-amber" ],
+        [ :gaming, "PlayStation gaming",   "18 consoles across three locations. Book a 30-minute session, grab a controller, go.", gaming_slots_path, "bg-purple-500/10 text-purple-300" ],
+        [ :cinema, "Private cinema",       "Intimate screening rooms with curated films every night of the week.", screenings_path, "bg-sky-500/10 text-sky-300" ]
+      ].each do |(key, title, desc, path, chip_class)| %>
+        <%= link_to path, class: "relative overflow-hidden rounded-3xl h-[420px] group border border-white/5 hover:border-blaze-red/30 transition reveal block" do %>
+          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition duration-[1200ms]"
+               style="background-image: url('<%= experience_image(key, w: 1400, h: 1000) %>');"></div>
+          <div class="absolute inset-0 bg-linear-to-t from-blaze-ink via-blaze-ink/60 to-transparent"></div>
+          <div class="relative h-full p-8 flex flex-col justify-end">
+            <span class="chip <%= chip_class %> backdrop-blur w-fit"><%= title %></span>
+            <h3 class="font-display text-3xl md:text-4xl font-bold mt-4"><%= title %></h3>
+            <p class="mt-3 text-white/70 max-w-md"><%= desc %></p>
+            <span class="inline-flex items-center gap-2 mt-5 text-blaze-red font-medium group-hover:translate-x-2 transition">
+              Explore
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ CINEMA STRIP ═════════════════════════ -->
+<% if site_setting.section_enabled?(:cinema_strip) && @upcoming_screenings.any? %>
+  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-24" data-controller="reveal">
+    <div class="flex items-end justify-between mb-12 reveal">
+      <div>
+        <span class="chip bg-purple-500/10 text-purple-300">Cinema</span>
+        <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">What's showing this week</h2>
+      </div>
+      <%= link_to "All screenings →", screenings_path, class: "hidden md:inline text-white/60 hover:text-white transition" %>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <% @upcoming_screenings.each do |screening| %>
+        <%= link_to screening_path(screening), class: "card overflow-hidden hover:-translate-y-1 hover:border-blaze-red/40 transition reveal block group" do %>
+          <div class="aspect-[3/4] bg-linear-to-br from-purple-900/40 via-blaze-smoke to-blaze-ash overflow-hidden">
+            <% if screening.poster.attached? %>
+              <%= image_tag screening.poster, class: "w-full h-full object-cover group-hover:scale-110 transition duration-700" %>
+            <% else %>
+              <div class="w-full h-full grid place-items-center"><span class="font-display text-4xl font-bold text-white/10">●</span></div>
+            <% end %>
+          </div>
+          <div class="p-5">
+            <p class="text-xs uppercase tracking-widest text-blaze-amber"><%= screening.starts_at.strftime("%a · %I:%M %p") %></p>
+            <h3 class="font-display text-lg font-bold mt-1 line-clamp-1"><%= screening.title %></h3>
+            <p class="text-sm text-white/50 mt-1"><%= naira(screening.price_kobo) %> · <%= screening.seats_remaining %> left</p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ TESTIMONIAL ═════════════════════════ -->
+<% if site_setting.section_enabled?(:testimonial) && site_setting.testimonial_quote.present? %>
+  <section class="max-w-5xl mx-auto px-6 lg:px-10 py-24 text-center">
+    <svg class="w-12 h-12 mx-auto text-blaze-red/60 mb-6" fill="currentColor" viewBox="0 0 32 32">
+      <path d="M10 8v8a6 6 0 01-6 6v4a10 10 0 0010-10V8zm18 0v8a6 6 0 01-6 6v4a10 10 0 0010-10V8z"/>
+    </svg>
+    <p class="font-display text-3xl md:text-4xl font-medium leading-[1.25] text-white/90">"<%= site_setting.testimonial_quote %>"</p>
+    <% if site_setting.testimonial_author.present? %>
+      <p class="mt-8 text-sm uppercase tracking-widest text-white/40">— <%= site_setting.testimonial_author %></p>
+    <% end %>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ LOCATIONS ═════════════════════════ -->
+<% if site_setting.section_enabled?(:locations) && @locations.any? %>
+  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-24" data-controller="reveal">
+    <div class="text-center mb-12 reveal">
+      <span class="chip bg-white/5 text-white/70 border border-white/10">Locations</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">Find your nearest <%= site_setting.logo_wordmark.gsub('.', '') %>.</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <% @locations.each do |location| %>
+        <%= link_to location_path(location), class: "relative overflow-hidden rounded-3xl h-[320px] group border border-white/5 hover:border-blaze-red/30 transition reveal block" do %>
+          <% if location.hero_image.attached? %>
+            <%= image_tag location.hero_image, class: "absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-[1200ms]" %>
+          <% end %>
+          <div class="absolute inset-0 bg-linear-to-t from-blaze-ink via-blaze-ink/50 to-transparent"></div>
+          <div class="relative h-full p-6 flex flex-col justify-end">
+            <p class="text-xs uppercase tracking-widest text-blaze-red"><%= location.city %></p>
+            <h3 class="font-display text-2xl font-bold mt-1"><%= location.name %></h3>
+            <p class="text-white/60 text-sm mt-2"><%= location.address %></p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<!-- ═════════════════════════ CTA BAND ═════════════════════════ -->
+<% if site_setting.section_enabled?(:cta_band) %>
+  <section class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24">
+    <div class="relative overflow-hidden rounded-[2rem] border border-white/10 p-12 md:p-20 text-center">
+      <div class="absolute inset-0 bg-cover bg-center opacity-30"
+           style="background-image: url('<%= unsplash_url("1604329760661-e71dc83f8f26", w: 1800, h: 800) %>');"></div>
+      <div class="absolute inset-0 bg-linear-to-br from-blaze-ink via-blaze-ink/80 to-blaze-red/20"></div>
+      <div class="relative">
+        <h2 class="font-display text-5xl md:text-7xl font-black"><%= site_setting.cta_headline %></h2>
+        <p class="mt-6 text-xl text-white/70 max-w-2xl mx-auto"><%= site_setting.cta_body %></p>
+        <div class="mt-10 flex flex-wrap gap-4 justify-center">
+          <%= link_to "Book gaming", gaming_slots_path, class: "btn-primary" %>
+          <%= link_to "Book cinema", screenings_path, class: "btn-ghost" %>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>

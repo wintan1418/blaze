@@ -1,0 +1,36 @@
+<% content_for :page_title, @screening.title %>
+
+<section class="max-w-5xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← All screenings", screenings_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="grid md:grid-cols-2 gap-12 mt-8">
+    <div class="aspect-[3/4] rounded-3xl bg-linear-to-br from-purple-900/40 via-blaze-smoke to-blaze-ash overflow-hidden border border-white/5">
+      <% if @screening.poster.attached? %>
+        <%= image_tag @screening.poster, class: "w-full h-full object-cover" %>
+      <% else %>
+        <div class="w-full h-full grid place-items-center">
+          <span class="font-display text-[8rem] font-bold text-white/5">●</span>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
+      <p class="chip bg-purple-500/10 text-purple-300"><%= @screening.starts_at.strftime("%A · %I:%M %p") %></p>
+      <h1 class="font-display text-5xl md:text-6xl font-black mt-4"><%= @screening.title %></h1>
+      <p class="mt-4 text-white/60"><%= @screening.screen.name %> · <%= @screening.screen.location.name %></p>
+
+      <p class="font-display text-5xl font-bold fire-text mt-8"><%= naira(@screening.price_kobo) %></p>
+      <p class="text-sm text-white/50 mt-2">per seat · <%= @screening.seats_remaining %> seats remaining</p>
+
+      <p class="mt-8 text-white/70 leading-relaxed"><%= @screening.synopsis %></p>
+
+      <div class="mt-10">
+        <% if @screening.sold_out? %>
+          <span class="btn bg-white/5 text-white/40 cursor-not-allowed">Sold out</span>
+        <% else %>
+          <%= link_to "Book seats", new_screening_booking_path(@screening), class: "btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

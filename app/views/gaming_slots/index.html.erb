@@ -1,0 +1,64 @@
+<% content_for :page_title, "Gaming" %>
+
+<%= turbo_stream_from "gaming_slots" %>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
+  <span class="chip bg-blaze-red/10 text-blaze-red">Gaming</span>
+  <h1 class="font-display text-5xl md:text-7xl font-black mt-6">Pick up a <span class="fire-text italic">controller</span>.</h1>
+  <p class="mt-6 text-lg text-white/60 max-w-2xl">30-minute sessions on PS4 and PS5. Reserve a slot, show up, game on.</p>
+</section>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 pb-24">
+  <% if @locations.any? %>
+    <div class="flex flex-wrap gap-2 mb-6">
+      <% @locations.each do |location| %>
+        <%= link_to location.name, gaming_slots_path(location: location.slug, date: @selected_date),
+              class: "chip #{@selected_location&.id == location.id ? 'bg-blaze-red text-white' : 'bg-white/5 text-white/60 border border-white/10 hover:text-white'}" %>
+      <% end %>
+    </div>
+
+    <% if @selected_location %>
+      <!-- Date picker -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-8">
+        <% 7.times do |offset| %>
+          <% date = Date.current + offset %>
+          <% selected = @selected_date == date %>
+          <%= link_to gaming_slots_path(location: @selected_location.slug, date: date),
+                class: "flex-shrink-0 px-5 py-3 rounded-2xl border transition text-center #{selected ? 'bg-blaze-red border-blaze-red text-white' : 'bg-white/5 border-white/10 text-white/70 hover:text-white hover:border-white/30'}" do %>
+            <p class="text-xs uppercase tracking-widest opacity-80"><%= date.strftime("%a") %></p>
+            <p class="font-display text-2xl font-bold"><%= date.strftime("%d") %></p>
+            <p class="text-xs opacity-80"><%= date.strftime("%b") %></p>
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if @consoles.any? %>
+        <div class="space-y-6">
+          <% @consoles.each do |console| %>
+            <div class="card p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="font-display text-xl font-bold"><%= console.label %></h3>
+                  <p class="text-xs uppercase tracking-widest text-white/40">Console #<%= console.number %></p>
+                </div>
+                <span class="chip bg-emerald-500/10 text-emerald-300">Active</span>
+              </div>
+              <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 gap-2">
+                <% (@slot_grid[console.id] || []).each do |slot| %>
+                  <%= render "slot", slot: slot %>
+                <% end %>
+                <% if (@slot_grid[console.id] || []).empty? %>
+                  <p class="col-span-full text-sm text-white/40">No slots for this date.</p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-white/50">No consoles available at this location yet.</p>
+      <% end %>
+    <% end %>
+  <% else %>
+    <p class="text-white/50">No locations yet. Check back soon.</p>
+  <% end %>
+</section>

@@ -1,0 +1,16 @@
+<% content_for :page_title, "Gaming Slot" %>
+
+<section class="max-w-3xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← Back to gaming", gaming_slots_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="card p-8 mt-8">
+    <p class="label-blaze">Slot details</p>
+    <h1 class="font-display text-3xl font-bold mt-2"><%= @slot.gaming_console.label %></h1>
+    <p class="text-lg text-white/70 mt-2"><%= @slot.starts_at.strftime("%A, %B %d · %I:%M %p") %></p>
+    <p class="font-display text-4xl fire-text font-bold mt-6"><%= naira(@slot.price_kobo) %></p>
+
+    <div class="mt-8">
+      <%= link_to "Book this slot", new_gaming_slot_booking_path(@slot), class: "btn-primary" %>
+    </div>
+  </div>
+</section>

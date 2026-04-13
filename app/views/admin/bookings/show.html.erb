@@ -1,0 +1,57 @@
+<% content_for :page_title, "Booking #{@booking.reference}" %>
+<%= render "admin/shared/page_header", title: @booking.reference, subtitle: "Booking details" %>
+
+<div class="grid md:grid-cols-3 gap-6">
+  <div class="md:col-span-2 card p-6 space-y-4">
+    <div>
+      <p class="label-blaze">Customer</p>
+      <p class="font-medium"><%= @booking.user.display_name %></p>
+      <p class="text-sm text-white/50"><%= @booking.user.email %> · <%= @booking.user.phone %></p>
+    </div>
+    <div>
+      <p class="label-blaze">Booked for</p>
+      <% if @booking.bookable.is_a?(GamingSlot) %>
+        <p class="font-medium"><%= @booking.bookable.gaming_console.label %> · <%= @booking.bookable.starts_at.strftime("%a %b %d · %I:%M %p") %></p>
+        <p class="text-sm text-white/50"><%= @booking.bookable.gaming_console.location.name %></p>
+      <% elsif @booking.bookable.is_a?(Screening) %>
+        <p class="font-medium"><%= @booking.bookable.title %> · <%= @booking.bookable.starts_at.strftime("%a %b %d · %I:%M %p") %></p>
+        <p class="text-sm text-white/50"><%= @booking.bookable.screen.name %></p>
+      <% end %>
+    </div>
+    <div class="grid grid-cols-3 gap-4">
+      <div>
+        <p class="label-blaze">Seats</p>
+        <p class="font-display text-2xl font-bold"><%= @booking.seats %></p>
+      </div>
+      <div>
+        <p class="label-blaze">Total</p>
+        <p class="font-display text-2xl font-bold fire-text"><%= naira(@booking.total_price_kobo) %></p>
+      </div>
+      <div>
+        <p class="label-blaze">Status</p>
+        <p class="font-medium capitalize"><%= @booking.status %></p>
+      </div>
+    </div>
+    <% if @booking.notes.present? %>
+      <div>
+        <p class="label-blaze">Notes</p>
+        <p class="text-sm text-white/70"><%= @booking.notes %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="card p-6">
+    <%= form_with model: @booking, url: admin_booking_path(@booking), method: :patch, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :status, class: "label-blaze" %>
+        <%= f.select :status, Booking::STATUSES.map { |s| [ s.capitalize, s ] }, {}, class: "input-blaze" %>
+      </div>
+      <div>
+        <%= f.label :notes, class: "label-blaze" %>
+        <%= f.text_area :notes, rows: 3, class: "input-blaze" %>
+      </div>
+      <%= f.submit "Update", class: "btn-primary w-full" %>
+    <% end %>
+    <%= link_to "← Back to bookings", admin_bookings_path, class: "block mt-4 text-center text-xs text-white/50 hover:text-white" %>
+  </div>
+</div>

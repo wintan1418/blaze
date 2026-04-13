@@ -1,0 +1,9 @@
+<% content_for :page_title, "About" %>
+
+<section class="max-w-4xl mx-auto px-6 lg:px-10 py-24">
+  <span class="chip bg-blaze-red/10 text-blaze-red"><%= site_setting.about_eyebrow %></span>
+  <h1 class="font-display text-5xl md:text-6xl font-black mt-6"><%= site_setting.about_headline %></h1>
+  <div class="mt-10 space-y-6 text-lg text-white/70 leading-relaxed">
+    <%= simple_format(site_setting.about_body) %>
+  </div>
+</section>

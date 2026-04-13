@@ -1,0 +1,27 @@
+<% content_for :page_title, "Locations" %>
+<%= render "admin/shared/page_header", title: "Locations", subtitle: "Branches across Ondo State",
+      action_label: "+ New location", action_path: new_admin_location_path %>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <% @locations.each do |location| %>
+    <div class="card p-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="font-display text-xl font-bold"><%= location.name %></h3>
+          <p class="text-sm text-white/50 mt-1"><%= location.address %></p>
+          <p class="text-sm text-white/50"><%= location.city %> · <%= location.phone %></p>
+        </div>
+        <% if location.active %><span class="chip bg-emerald-500/10 text-emerald-300">Live</span>
+        <% else %><span class="chip bg-white/5 text-white/40">Inactive</span><% end %>
+      </div>
+      <div class="mt-4 flex items-center gap-4 text-xs text-white/50">
+        <span><%= location.gaming_consoles.count %> consoles</span>
+        <span><%= location.screens.count %> screens</span>
+      </div>
+      <div class="mt-5 flex gap-3">
+        <%= link_to "Edit", edit_admin_location_path(location), class: "btn-ghost text-xs" %>
+        <%= button_to "Delete", admin_location_path(location), method: :delete, class: "text-white/40 hover:text-red-400 text-xs", form: { data: { turbo_confirm: "Delete this location?" }, class: "inline" } %>
+      </div>
+    </div>
+  <% end %>
+</div>

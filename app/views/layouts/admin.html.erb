@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-blaze-ink">
+  <head>
+    <title>Admin · <%= content_for?(:page_title) ? content_for(:page_title) : site_setting.site_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="<%= site_setting.google_fonts_href %>" rel="stylesheet">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+
+    <style>
+      :root {
+        <% site_setting.css_variables.each do |key, value| %>
+          <%= key %>: <%= value %>;
+        <% end %>
+      }
+    </style>
+  </head>
+
+  <body class="font-body text-zinc-100 min-h-screen">
+    <div class="flex min-h-screen">
+      <%= render "admin/shared/sidebar" %>
+
+      <div class="flex-1 flex flex-col">
+        <header class="border-b border-white/5 px-8 py-5 flex items-center justify-between sticky top-0 bg-blaze-ink/80 backdrop-blur z-20">
+          <div>
+            <h1 class="font-display text-2xl font-bold"><%= content_for?(:page_title) ? content_for(:page_title) : "Dashboard" %></h1>
+            <p class="text-xs uppercase tracking-widest text-white/40 mt-1"><%= content_for?(:page_subtitle) ? content_for(:page_subtitle) : Time.current.strftime("%A, %b %d") %></p>
+          </div>
+          <div class="flex items-center gap-4">
+            <%= link_to "View site →", root_path, class: "text-sm text-white/60 hover:text-white transition" %>
+            <div class="w-9 h-9 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-bold"><%= current_user.email.first.upcase %></div>
+          </div>
+        </header>
+
+        <%= render "shared/flash" %>
+
+        <main class="flex-1 p-8">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

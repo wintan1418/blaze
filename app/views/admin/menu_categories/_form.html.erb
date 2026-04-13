@@ -1,0 +1,28 @@
+<%= form_with model: [ :admin, @category ], class: "space-y-6 max-w-xl" do |f| %>
+  <% if @category.errors.any? %>
+    <div class="card p-4 border-red-500/30 bg-red-500/5">
+      <p class="text-sm font-medium text-red-300 mb-1"><%= pluralize(@category.errors.count, "error") %></p>
+      <ul class="text-xs text-red-300/80 list-disc list-inside">
+        <% @category.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, class: "label-blaze" %>
+    <%= f.text_field :name, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :position, class: "label-blaze" %>
+    <%= f.number_field :position, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :accent_color, "Accent color (hex)", class: "label-blaze" %>
+    <%= f.text_field :accent_color, placeholder: "#E8341A", class: "input-blaze" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "btn-primary" %>
+    <%= link_to "Cancel", admin_menu_categories_path, class: "text-white/50 hover:text-white text-sm" %>
+  </div>
+<% end %>

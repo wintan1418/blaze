@@ -1,0 +1,14 @@
+<div id="gaming_slot_<%= slot.id %>">
+  <% if slot.taken? %>
+    <div class="rounded-xl border border-white/5 bg-white/[0.02] px-3 py-3 text-center opacity-50 cursor-not-allowed">
+      <p class="text-xs font-medium"><%= slot.starts_at.strftime("%I:%M %p") %></p>
+      <p class="text-[10px] uppercase tracking-widest text-white/40 mt-1">Booked</p>
+    </div>
+  <% else %>
+    <%= link_to new_gaming_slot_booking_path(slot),
+          class: "block rounded-xl border border-white/10 bg-blaze-smoke/60 hover:bg-blaze-red hover:border-blaze-red hover:-translate-y-0.5 transition px-3 py-3 text-center group" do %>
+      <p class="text-xs font-medium text-white group-hover:text-white"><%= slot.starts_at.strftime("%I:%M %p") %></p>
+      <p class="text-[10px] uppercase tracking-widest text-blaze-amber group-hover:text-white/80 mt-1"><%= naira(slot.price_kobo) %></p>
+    <% end %>
+  <% end %>
+</div>

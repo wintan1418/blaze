@@ -1,0 +1,55 @@
+<% content_for :page_title, @item.name %>
+
+<section class="max-w-5xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← Back to menu", menu_items_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="grid md:grid-cols-2 gap-12 mt-8">
+    <div class="aspect-square rounded-3xl bg-linear-to-br from-blaze-smoke via-blaze-ash to-blaze-ink grid place-items-center overflow-hidden border border-white/5">
+      <% if @item.image.attached? %>
+        <%= image_tag @item.image, class: "w-full h-full object-cover" %>
+      <% else %>
+        <span class="font-display text-[12rem] font-bold text-white/5">B</span>
+      <% end %>
+    </div>
+
+    <div>
+      <p class="chip bg-blaze-red/10 text-blaze-red"><%= @item.menu_category.name %></p>
+      <h1 class="font-display text-5xl md:text-6xl font-black mt-4"><%= @item.name %></h1>
+      <p class="font-display text-5xl font-bold fire-text mt-6"><%= naira(@item.price_kobo) %></p>
+      <p class="mt-6 text-lg text-white/70 leading-relaxed"><%= @item.description %></p>
+
+      <% if @item.preparation_time %>
+        <div class="mt-8 flex items-center gap-2 text-sm text-white/60">
+          <span class="chip bg-white/5 border border-white/10">~ <%= @item.preparation_time %> min prep</span>
+          <% if @item.featured %><span class="chip bg-blaze-amber/10 text-blaze-amber">Signature</span><% end %>
+        </div>
+      <% end %>
+
+      <div class="mt-10 flex gap-3">
+        <%= link_to "Order at the counter", contact_path, class: "btn-primary" %>
+        <%= link_to "← More from #{@item.menu_category.name}", menu_items_path(category: @item.menu_category.slug), class: "btn-ghost" %>
+      </div>
+    </div>
+  </div>
+
+  <% if @related.any? %>
+    <section class="mt-24">
+      <h2 class="font-display text-3xl font-bold mb-8">More <%= @item.menu_category.name.downcase %></h2>
+      <div class="grid sm:grid-cols-3 gap-6">
+        <% @related.each do |related| %>
+          <%= link_to menu_item_path(related), class: "card p-5 hover:border-blaze-red/40 transition block" do %>
+            <div class="aspect-video rounded-lg bg-blaze-smoke grid place-items-center mb-4">
+              <% if related.image.attached? %>
+                <%= image_tag related.image, class: "w-full h-full object-cover rounded-lg" %>
+              <% else %>
+                <span class="font-display text-3xl font-bold text-white/10">B</span>
+              <% end %>
+            </div>
+            <h3 class="font-display font-bold"><%= related.name %></h3>
+            <p class="text-sm text-blaze-amber"><%= naira(related.price_kobo) %></p>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</section>

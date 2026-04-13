@@ -1,0 +1,89 @@
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Identity</h2>
+    <p class="text-sm text-white/50 mt-1">Name, logo, tagline — what the world sees.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Site name</label>
+      <%= f.text_field :site_name, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Tagline</label>
+      <%= f.text_field :tagline, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Logo mark (single letter)</label>
+      <%= f.text_field :logo_mark, class: "input-blaze", maxlength: 2 %>
+    </div>
+    <div>
+      <label class="label-blaze">Logo wordmark</label>
+      <%= f.text_field :logo_wordmark, class: "input-blaze", placeholder: "BLAZE." %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Logo upload (optional — overrides the text mark)</label>
+      <% if @setting.logo_image.attached? %>
+        <div class="mb-2"><%= image_tag @setting.logo_image, class: "w-16 h-16 rounded-full object-cover" %></div>
+      <% end %>
+      <%= f.file_field :logo_image, accept: "image/*", class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Brand colors</h2>
+    <p class="text-sm text-white/50 mt-1">Pick colors and the whole site repaints. No rebuild needed.</p>
+  </div>
+  <div class="grid md:grid-cols-3 gap-5">
+    <% [
+      [ :primary_color, "Primary (blaze red)" ],
+      [ :ember_color,   "Ember"                ],
+      [ :accent_color,  "Accent (amber)"       ],
+      [ :ink_color,     "Ink (background)"     ],
+      [ :ash_color,     "Ash (cards)"          ],
+      [ :smoke_color,   "Smoke (inputs)"       ]
+    ].each do |(attr, label)| %>
+      <div>
+        <label class="label-blaze"><%= label %></label>
+        <div class="flex gap-2 items-center">
+          <input type="color" name="site_setting[<%= attr %>]" value="#<%= @setting.send(attr) %>" class="h-12 w-16 rounded-xl border border-white/10 bg-blaze-smoke cursor-pointer">
+          <span class="font-mono text-sm text-white/60">#<%= @setting.send(attr) %></span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <!-- Live preview -->
+  <div class="grid md:grid-cols-4 gap-3 pt-4 border-t border-white/5">
+    <% [
+      [ "Primary",  @setting.primary_color ],
+      [ "Ember",    @setting.ember_color   ],
+      [ "Amber",    @setting.accent_color  ],
+      [ "Ink",      @setting.ink_color     ]
+    ].each do |(label, hex)| %>
+      <div class="rounded-xl p-4 border border-white/5" style="background-color: #<%= hex %>;">
+        <p class="text-xs uppercase tracking-widest font-medium text-white/80 mix-blend-difference"><%= label %></p>
+        <p class="font-mono text-sm text-white/90 mix-blend-difference mt-1">#<%= hex %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Typography</h2>
+    <p class="text-sm text-white/50 mt-1">Any Google Font family name — loaded at page load.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Display font (headings)</label>
+      <%= f.text_field :display_font, class: "input-blaze", placeholder: "Space Grotesk" %>
+      <p class="text-xs text-white/40 mt-1">Try: Space Grotesk, Bebas Neue, Playfair Display, Archivo Black</p>
+    </div>
+    <div>
+      <label class="label-blaze">Body font</label>
+      <%= f.text_field :body_font, class: "input-blaze", placeholder: "Inter" %>
+      <p class="text-xs text-white/40 mt-1">Try: Inter, DM Sans, Manrope, Poppins</p>
+    </div>
+  </div>
+</div>

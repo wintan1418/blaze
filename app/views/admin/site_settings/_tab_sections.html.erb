@@ -1,0 +1,38 @@
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Homepage sections</h2>
+    <p class="text-sm text-white/50 mt-1">Toggle sections on and off. Disabled sections are hidden completely from visitors.</p>
+  </div>
+
+  <div class="space-y-2">
+    <% sections_meta = {
+      menu_marquee:    [ "Menu marquee strip",   "Horizontal scrolling list of dishes above the vibe gallery" ],
+      vibe_gallery:    [ "Vibe gallery",         "Lifestyle photo grid with the 'This is how we come alive' block" ],
+      featured_dishes: [ "Featured dishes",      "Grid of dishes marked as Featured in the menu" ],
+      experiences:    [ "Four experiences grid","Food / Drinks / Gaming / Cinema with photo backgrounds" ],
+      cinema_strip:   [ "Cinema strip",          "Upcoming screenings carousel" ],
+      testimonial:    [ "Testimonial quote",     "Editorial customer quote section" ],
+      locations:      [ "Locations grid",        "Three branch cards with hero photos" ],
+      cta_band:       [ "CTA band",              "Final 'Ready to come alive?' block at the bottom" ]
+    } %>
+    <% sections_meta.each do |key, (label, hint)| %>
+      <% enabled = @setting.section_enabled?(key) %>
+      <label class="flex items-center justify-between gap-6 p-4 rounded-xl border border-white/5 bg-blaze-smoke/50 hover:bg-blaze-smoke transition cursor-pointer">
+        <div class="min-w-0">
+          <p class="font-medium"><%= label %></p>
+          <p class="text-xs text-white/50 mt-0.5"><%= hint %></p>
+        </div>
+        <input type="hidden" name="site_setting[sections][<%= key %>]" value="0">
+        <span class="relative inline-block w-14 h-8 shrink-0">
+          <input type="checkbox"
+                 name="site_setting[sections][<%= key %>]"
+                 value="1"
+                 <%= "checked" if enabled %>
+                 class="peer sr-only">
+          <span class="absolute inset-0 rounded-full bg-white/10 transition peer-checked:bg-blaze-red"></span>
+          <span class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white transition-all peer-checked:translate-x-6"></span>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</div>

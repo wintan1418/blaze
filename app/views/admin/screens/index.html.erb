@@ -1,0 +1,17 @@
+<% content_for :page_title, "Cinema Screens" %>
+<%= render "admin/shared/page_header", title: "Cinema Screens", subtitle: "Private screening rooms per location",
+      action_label: "+ New screen", action_path: new_admin_screen_path %>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <% @screens.each do |screen| %>
+    <div class="card p-6">
+      <h3 class="font-display text-xl font-bold"><%= screen.name %></h3>
+      <p class="text-sm text-white/50 mt-1"><%= screen.location.name %></p>
+      <p class="text-sm text-white/50"><%= pluralize(screen.capacity, "seat") %> · <%= screen.screenings.count %> screenings scheduled</p>
+      <div class="mt-5 flex gap-3">
+        <%= link_to "Edit", edit_admin_screen_path(screen), class: "btn-ghost text-xs" %>
+        <%= button_to "Delete", admin_screen_path(screen), method: :delete, class: "text-white/40 hover:text-red-400 text-xs", form: { data: { turbo_confirm: "Delete this screen?" }, class: "inline" } %>
+      </div>
+    </div>
+  <% end %>
+</div>

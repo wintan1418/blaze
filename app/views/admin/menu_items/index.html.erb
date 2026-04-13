@@ -1,0 +1,47 @@
+<% content_for :page_title, "Menu Items" %>
+<%= render "admin/shared/page_header", title: "Menu Items", subtitle: "Everything served across all locations",
+      action_label: "+ New item", action_path: new_admin_menu_item_path %>
+
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">Item</th>
+        <th class="text-left px-6 py-3">Category</th>
+        <th class="text-left px-6 py-3">Price</th>
+        <th class="text-left px-6 py-3">Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @items.each do |item| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <% if item.image.attached? %>
+                <%= image_tag item.image, class: "w-10 h-10 rounded-lg object-cover" %>
+              <% else %>
+                <div class="w-10 h-10 rounded-lg bg-blaze-smoke grid place-items-center text-white/30 text-xs">—</div>
+              <% end %>
+              <div>
+                <p class="font-medium"><%= item.name %></p>
+                <p class="text-xs text-white/40 truncate max-w-[30ch]"><%= item.description %></p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-white/60"><%= item.menu_category.name %></td>
+          <td class="px-6 py-4 font-medium"><%= naira(item.price_kobo) %></td>
+          <td class="px-6 py-4">
+            <% if item.featured %><span class="chip bg-blaze-amber/10 text-blaze-amber mr-1">Featured</span><% end %>
+            <% if item.available %><span class="chip bg-emerald-500/10 text-emerald-300">Live</span>
+            <% else %><span class="chip bg-white/5 text-white/40">Hidden</span><% end %>
+          </td>
+          <td class="px-6 py-4 text-right space-x-2">
+            <%= link_to "Edit", edit_admin_menu_item_path(item), class: "text-blaze-amber hover:text-white" %>
+            <%= button_to "Delete", admin_menu_item_path(item), method: :delete, class: "text-white/40 hover:text-red-400", form: { data: { turbo_confirm: "Delete this item?" }, class: "inline" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

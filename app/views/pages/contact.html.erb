@@ -1,0 +1,35 @@
+<% content_for :page_title, "Contact" %>
+
+<section class="max-w-4xl mx-auto px-6 lg:px-10 py-24">
+  <span class="chip bg-blaze-amber/10 text-blaze-amber"><%= site_setting.contact_eyebrow %></span>
+  <h1 class="font-display text-5xl md:text-6xl font-black mt-6"><%= site_setting.contact_headline %></h1>
+  <p class="mt-6 text-lg text-white/60 max-w-2xl"><%= site_setting.contact_body %></p>
+
+  <div class="mt-12 grid md:grid-cols-2 gap-6">
+    <% Location.active.each do |location| %>
+      <div class="card p-8">
+        <p class="label-blaze"><%= location.name %></p>
+        <p class="text-sm text-white/50 mt-2"><%= location.address %></p>
+        <p class="font-display text-xl font-bold mt-4"><%= location.phone %></p>
+        <p class="text-sm text-white/50 mt-1">Daily · 10am — 11pm</p>
+      </div>
+    <% end %>
+    <% if site_setting.contact_email.present? %>
+      <div class="card p-8">
+        <p class="label-blaze">Email</p>
+        <p class="font-display text-xl font-bold mt-2"><%= site_setting.contact_email %></p>
+      </div>
+    <% end %>
+    <% if [ site_setting.instagram_url, site_setting.tiktok_url, site_setting.x_url ].any?(&:present?) %>
+      <div class="card p-8">
+        <p class="label-blaze">Socials</p>
+        <div class="mt-3 flex flex-wrap gap-2 text-sm">
+          <% if site_setting.instagram_url.present? %><a href="<%= site_setting.instagram_url %>" target="_blank" rel="noopener" class="chip bg-white/5 text-white/80 hover:text-white">Instagram</a><% end %>
+          <% if site_setting.tiktok_url.present? %><a href="<%= site_setting.tiktok_url %>" target="_blank" rel="noopener" class="chip bg-white/5 text-white/80 hover:text-white">TikTok</a><% end %>
+          <% if site_setting.x_url.present? %><a href="<%= site_setting.x_url %>" target="_blank" rel="noopener" class="chip bg-white/5 text-white/80 hover:text-white">X</a><% end %>
+          <% if site_setting.whatsapp_url.present? %><a href="<%= site_setting.whatsapp_url %>" target="_blank" rel="noopener" class="chip bg-white/5 text-white/80 hover:text-white">WhatsApp</a><% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,48 @@
+<%= form_with model: [ :admin, @screening ], multipart: true, class: "space-y-6 max-w-2xl" do |f| %>
+  <% if @screening.errors.any? %>
+    <div class="card p-4 border-red-500/30 bg-red-500/5">
+      <ul class="text-xs text-red-300/80 list-disc list-inside">
+        <% @screening.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="md:col-span-2">
+      <%= f.label :title, class: "label-blaze" %>
+      <%= f.text_field :title, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= f.label :synopsis, class: "label-blaze" %>
+      <%= f.text_area :synopsis, rows: 3, class: "input-blaze" %>
+    </div>
+    <div>
+      <%= f.label :screen_id, "Screen", class: "label-blaze" %>
+      <%= f.collection_select :screen_id, Screen.includes(:location), :id, :name, {}, class: "input-blaze" %>
+    </div>
+    <div>
+      <%= f.label :price_kobo, "Price (kobo)", class: "label-blaze" %>
+      <%= f.number_field :price_kobo, step: 100, class: "input-blaze" %>
+    </div>
+    <div>
+      <%= f.label :starts_at, class: "label-blaze" %>
+      <%= f.datetime_local_field :starts_at, class: "input-blaze" %>
+    </div>
+    <div>
+      <%= f.label :ends_at, class: "label-blaze" %>
+      <%= f.datetime_local_field :ends_at, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= f.label :poster, "Poster image", class: "label-blaze" %>
+      <%= f.file_field :poster, accept: "image/*", class: "input-blaze" %>
+    </div>
+    <label class="flex items-center gap-2 text-sm text-white/70">
+      <%= f.check_box :available, class: "accent-blaze-red" %> Available to book
+    </label>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "btn-primary" %>
+    <%= link_to "Cancel", admin_screenings_path, class: "text-white/50 hover:text-white text-sm" %>
+  </div>
+<% end %>

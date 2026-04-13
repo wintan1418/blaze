@@ -1,0 +1,30 @@
+<% content_for :page_title, "Edit User" %>
+<%= render "admin/shared/page_header", title: @user.email %>
+
+<%= form_with model: [ :admin, @user ], class: "space-y-6 max-w-xl" do |f| %>
+  <% if @user.errors.any? %>
+    <div class="card p-4 border-red-500/30 bg-red-500/5">
+      <ul class="text-xs text-red-300/80 list-disc list-inside">
+        <% @user.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :full_name, class: "label-blaze" %>
+    <%= f.text_field :full_name, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :phone, class: "label-blaze" %>
+    <%= f.text_field :phone, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :role, class: "label-blaze" %>
+    <%= f.select :role, User.roles.keys.map { |r| [ r.capitalize, r ] }, {}, class: "input-blaze" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "btn-primary" %>
+    <%= link_to "Cancel", admin_users_path, class: "text-white/50 hover:text-white text-sm" %>
+  </div>
+<% end %>

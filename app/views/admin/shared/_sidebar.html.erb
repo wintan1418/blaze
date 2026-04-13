@@ -1,0 +1,44 @@
+<aside class="w-64 bg-blaze-ash/60 border-r border-white/5 min-h-screen sticky top-0 flex flex-col">
+  <div class="px-6 py-6 border-b border-white/5">
+    <%= link_to admin_root_path, class: "flex items-center gap-2" do %>
+      <% if site_setting.logo_image.attached? %>
+        <%= image_tag site_setting.logo_image, class: "w-8 h-8 rounded-full object-cover" %>
+      <% else %>
+        <span class="w-8 h-8 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-display font-bold text-white text-sm"><%= site_setting.logo_mark %></span>
+      <% end %>
+      <span class="font-display font-bold tracking-tight"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span>admin</span>
+    <% end %>
+  </div>
+
+  <nav class="flex-1 p-4 space-y-1 text-sm">
+    <% nav = [
+      [ "Dashboard", admin_root_path, "◆" ],
+      [ "Site settings", edit_admin_site_setting_path, "✦" ],
+      [ "Hero slides", admin_hero_slides_path, "▷" ],
+      [ "Menu items", admin_menu_items_path, "◈" ],
+      [ "Categories", admin_menu_categories_path, "◉" ],
+      [ "Gaming consoles", admin_gaming_consoles_path, "▲" ],
+      [ "Gaming slots", admin_gaming_slots_path, "▴" ],
+      [ "Cinema screens", admin_screens_path, "■" ],
+      [ "Screenings", admin_screenings_path, "▸" ],
+      [ "Locations", admin_locations_path, "◇" ],
+      [ "Bookings", admin_bookings_path, "●" ],
+      [ "Users", admin_users_path, "◐" ]
+    ] %>
+    <% nav.each do |(label, path, icon)| %>
+      <% active = request.path.start_with?(path.split("?").first) && path != admin_root_path || (path == admin_root_path && request.path == admin_root_path) %>
+      <%= link_to path, class: "flex items-center gap-3 px-4 py-2.5 rounded-xl transition #{active ? 'bg-blaze-red/15 text-white border border-blaze-red/30' : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'}" do %>
+        <span class="text-blaze-amber/80"><%= icon %></span>
+        <%= label %>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <div class="p-4 border-t border-white/5">
+    <%= button_to destroy_user_session_path, method: :delete,
+          class: "w-full text-left px-4 py-2 rounded-xl text-sm text-white/60 hover:text-white hover:bg-white/5 transition",
+          form: { data: { turbo: false } } do %>
+      Sign out
+    <% end %>
+  </div>
+</aside>

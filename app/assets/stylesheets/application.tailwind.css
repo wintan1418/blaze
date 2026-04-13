@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blaze-ink: #0A0A0B;
+  --color-blaze-ash: #13131A;
+  --color-blaze-smoke: #1C1C24;
+  --color-blaze-red: #E8341A;
+  --color-blaze-ember: #FF5A1F;
+  --color-blaze-amber: #F5A623;
+  --color-blaze-cream: #FFF8EC;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius-blaze: 1.25rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-blaze-ink);
+    color: #F4F4F5;
+  }
+
+  h1, h2, h3, h4, h5, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: var(--color-blaze-red);
+    color: white;
+  }
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: transform 300ms ease-out, box-shadow 300ms ease-out, background-color 300ms ease-out, border-color 300ms ease-out, color 300ms ease-out;
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  background-color: #E8341A;
+  color: white;
+  box-shadow: 0 10px 40px -10px rgba(232, 52, 26, 0.6);
+  transition: transform 300ms ease-out, box-shadow 300ms ease-out;
+}
+@utility btn-primary {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 50px -10px rgba(232, 52, 26, 0.75);
+  }
+}
+
+@utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease;
+}
+@utility btn-ghost {
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+  }
+}
+
+@utility card {
+  background-color: rgba(19, 19, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(8px);
+}
+
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+@utility input-blaze {
+  width: 100%;
+  background-color: #1C1C24;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: white;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+@utility input-blaze {
+  &::placeholder { color: rgba(255, 255, 255, 0.4); }
+  &:focus {
+    outline: none;
+    border-color: #E8341A;
+    box-shadow: 0 0 0 3px rgba(232, 52, 26, 0.3);
+  }
+}
+
+@utility label-blaze {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.5rem;
+}
+
+@layer components {
+  .fire-text {
+    background-image: linear-gradient(135deg, #E8341A 0%, #FF5A1F 40%, #F5A623 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    gap: 3rem;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+  .marquee__track {
+    display: flex;
+    gap: 3rem;
+    flex-shrink: 0;
+    animation: blaze-marquee 40s linear infinite;
+  }
+  @keyframes blaze-marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(2rem);
+    transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track,
+    .reveal {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+<%= form_with model: [ :admin, @slot ], class: "space-y-6 max-w-xl" do |f| %>
+  <% if @slot.errors.any? %>
+    <div class="card p-4 border-red-500/30 bg-red-500/5">
+      <ul class="text-xs text-red-300/80 list-disc list-inside">
+        <% @slot.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :gaming_console_id, "Console", class: "label-blaze" %>
+    <%= f.collection_select :gaming_console_id, GamingConsole.includes(:location), :id, :label, {}, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :starts_at, "Starts at", class: "label-blaze" %>
+    <%= f.datetime_local_field :starts_at, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :duration_minutes, class: "label-blaze" %>
+    <%= f.number_field :duration_minutes, value: @slot.duration_minutes || 30, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :status, class: "label-blaze" %>
+    <%= f.select :status, GamingSlot::STATUSES.map { |s| [ s.humanize, s ] }, {}, class: "input-blaze" %>
+  </div>
+  <div>
+    <%= f.label :price_kobo, "Price (kobo)", class: "label-blaze" %>
+    <%= f.number_field :price_kobo, step: 100, class: "input-blaze" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "btn-primary" %>
+    <%= link_to "Cancel", admin_gaming_slots_path, class: "text-white/50 hover:text-white text-sm" %>
+  </div>
+<% end %>

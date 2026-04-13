@@ -1,0 +1,59 @@
+<% content_for :page_title, "Book seats" %>
+
+<section class="max-w-2xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← Back", screening_path(@screening), class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="mt-8">
+    <span class="chip bg-purple-500/10 text-purple-300">Book seats</span>
+    <h1 class="font-display text-4xl md:text-5xl font-black mt-4">Reserve the big screen.</h1>
+
+    <div class="card p-6 mt-8">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="label-blaze">Film</p>
+          <p class="font-display text-xl font-bold mt-1"><%= @screening.title %></p>
+          <p class="text-sm text-white/50 mt-1"><%= @screening.screen.name %></p>
+        </div>
+        <div class="text-right">
+          <p class="label-blaze">When</p>
+          <p class="font-medium mt-1"><%= @screening.starts_at.strftime("%a %b %d") %></p>
+          <p class="text-sm text-white/60"><%= @screening.starts_at.strftime("%I:%M %p") %></p>
+        </div>
+      </div>
+      <div class="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
+        <div>
+          <p class="label-blaze">Price / seat</p>
+          <p class="font-display text-2xl font-bold mt-1"><%= naira(@screening.price_kobo) %></p>
+        </div>
+        <div>
+          <p class="label-blaze">Seats left</p>
+          <p class="font-display text-2xl font-bold mt-1"><%= @screening.seats_remaining %></p>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with model: @booking, url: screening_booking_path(@screening), class: "mt-8 space-y-6" do |f| %>
+      <% if @booking.errors.any? %>
+        <div class="card p-4 border-red-500/30 bg-red-500/5">
+          <ul class="text-xs text-red-300/80 list-disc list-inside">
+            <% @booking.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :seats, "Number of seats", class: "label-blaze" %>
+        <%= f.number_field :seats, min: 1, max: @screening.seats_remaining, value: 1, class: "input-blaze" %>
+      </div>
+      <div>
+        <%= f.label :notes, "Any requests?", class: "label-blaze" %>
+        <%= f.text_area :notes, rows: 3, placeholder: "Front row, late arrival, etc.", class: "input-blaze" %>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= f.submit "Confirm booking", class: "btn-primary" %>
+        <%= link_to "Cancel", screening_path(@screening), class: "text-white/50 hover:text-white text-sm" %>
+      </div>
+    <% end %>
+  </div>
+</section>

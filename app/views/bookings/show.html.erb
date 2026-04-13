@@ -1,0 +1,63 @@
+<% content_for :page_title, "Booking #{@booking.reference}" %>
+
+<section class="max-w-2xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← My bookings", bookings_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="mt-8 text-center">
+    <% case @booking.status
+       when "confirmed" %><span class="chip bg-emerald-500/10 text-emerald-300">Confirmed</span>
+    <% when "cancelled" %><span class="chip bg-white/5 text-white/40">Cancelled</span>
+    <% else %><span class="chip bg-blaze-amber/10 text-blaze-amber">Pending</span><% end %>
+    <p class="font-mono text-xs text-white/40 mt-4"><%= @booking.reference %></p>
+    <h1 class="font-display text-4xl font-black mt-2">
+      <% if @booking.bookable.is_a?(GamingSlot) %>
+        <%= @booking.bookable.gaming_console.label %>
+      <% elsif @booking.bookable.is_a?(Screening) %>
+        <%= @booking.bookable.title %>
+      <% end %>
+    </h1>
+  </div>
+
+  <div class="card p-8 mt-10 space-y-6">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <p class="label-blaze">When</p>
+        <p class="font-medium"><%= @booking.bookable.starts_at.strftime("%A, %B %d") %></p>
+        <p class="text-sm text-white/60"><%= @booking.bookable.starts_at.strftime("%I:%M %p") %></p>
+      </div>
+      <div>
+        <p class="label-blaze">Where</p>
+        <% if @booking.bookable.is_a?(GamingSlot) %>
+          <p class="font-medium"><%= @booking.bookable.gaming_console.location.name %></p>
+        <% elsif @booking.bookable.is_a?(Screening) %>
+          <p class="font-medium"><%= @booking.bookable.screen.location.name %></p>
+          <p class="text-sm text-white/60"><%= @booking.bookable.screen.name %></p>
+        <% end %>
+      </div>
+    </div>
+    <div class="pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
+      <div>
+        <p class="label-blaze">Seats</p>
+        <p class="font-display text-3xl font-bold"><%= @booking.seats %></p>
+      </div>
+      <div class="text-right">
+        <p class="label-blaze">Total</p>
+        <p class="font-display text-3xl font-bold fire-text"><%= naira(@booking.total_price_kobo) %></p>
+      </div>
+    </div>
+    <% if @booking.notes.present? %>
+      <div class="pt-6 border-t border-white/10">
+        <p class="label-blaze">Your notes</p>
+        <p class="text-white/70 mt-2"><%= @booking.notes %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <% if %w[pending confirmed].include?(@booking.status) %>
+    <div class="mt-8 text-center">
+      <%= button_to "Cancel this booking", cancel_booking_path(@booking), method: :post,
+            class: "text-sm text-white/40 hover:text-red-400 transition",
+            form: { data: { turbo_confirm: "Cancel this booking? This cannot be undone." } } %>
+    </div>
+  <% end %>
+</section>

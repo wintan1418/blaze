@@ -1,0 +1,56 @@
+<% content_for :page_title, "Gaming Slots" %>
+<%= render "admin/shared/page_header", title: "Gaming Slots", subtitle: "Bookable 30-minute sessions across all consoles",
+      action_label: "+ New slot", action_path: new_admin_gaming_slot_path %>
+
+<div class="card p-6 mb-6 border-blaze-red/20">
+  <h3 class="font-display text-lg font-bold mb-2">Bulk generate slots</h3>
+  <p class="text-sm text-white/50 mb-4">Create standard 30-minute slots (10am–6pm) for all active consoles across the next N days.</p>
+  <%= form_with url: generate_admin_gaming_slots_path, method: :post, class: "flex flex-wrap items-end gap-4" do |f| %>
+    <div>
+      <label class="label-blaze">Days ahead</label>
+      <%= f.number_field :days, value: 7, min: 1, max: 30, class: "input-blaze w-28" %>
+    </div>
+    <div>
+      <label class="label-blaze">Price (₦ per 30min)</label>
+      <%= f.number_field :price_naira, value: 1500, step: 100, min: 0, class: "input-blaze w-36" %>
+    </div>
+    <%= f.submit "Generate", class: "btn-primary" %>
+  <% end %>
+</div>
+
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">When</th>
+        <th class="text-left px-6 py-3">Console</th>
+        <th class="text-left px-6 py-3">Location</th>
+        <th class="text-left px-6 py-3">Price</th>
+        <th class="text-left px-6 py-3">Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @slots.each do |slot| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4"><%= slot.starts_at.strftime("%a %b %d · %I:%M %p") %></td>
+          <td class="px-6 py-4"><%= slot.gaming_console.label %></td>
+          <td class="px-6 py-4 text-white/50"><%= slot.gaming_console.location.name %></td>
+          <td class="px-6 py-4 font-medium"><%= naira(slot.price_kobo) %></td>
+          <td class="px-6 py-4">
+            <% case slot.status
+               when "open" %><span class="chip bg-emerald-500/10 text-emerald-300">Open</span>
+            <% when "reserved" %><span class="chip bg-blaze-amber/10 text-blaze-amber">Reserved</span>
+            <% else %><span class="chip bg-white/5 text-white/40"><%= slot.status %></span><% end %>
+          </td>
+          <td class="px-6 py-4 text-right space-x-2">
+            <%= link_to "Edit", edit_admin_gaming_slot_path(slot), class: "text-blaze-amber hover:text-white" %>
+            <%= button_to "Delete", admin_gaming_slot_path(slot), method: :delete, class: "text-white/40 hover:text-red-400", form: { data: { turbo_confirm: "Delete this slot?" }, class: "inline" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6"><%= blaze_pagy_nav(@pagy) %></div>

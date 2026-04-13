@@ -1,0 +1,38 @@
+<% content_for :page_title, "Users" %>
+<%= render "admin/shared/page_header", title: "Users", subtitle: "Customers, staff and admins" %>
+
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">Email</th>
+        <th class="text-left px-6 py-3">Name</th>
+        <th class="text-left px-6 py-3">Phone</th>
+        <th class="text-left px-6 py-3">Role</th>
+        <th class="text-left px-6 py-3">Joined</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @users.each do |user| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4 font-medium"><%= user.email %></td>
+          <td class="px-6 py-4 text-white/60"><%= user.full_name %></td>
+          <td class="px-6 py-4 text-white/60"><%= user.phone %></td>
+          <td class="px-6 py-4">
+            <% case user.role
+               when "admin" %><span class="chip bg-blaze-red/15 text-blaze-red">Admin</span>
+            <% when "staff" %><span class="chip bg-blaze-amber/10 text-blaze-amber">Staff</span>
+            <% else %><span class="chip bg-white/5 text-white/60">Customer</span><% end %>
+          </td>
+          <td class="px-6 py-4 text-white/50 text-xs"><%= user.created_at.strftime("%b %d, %Y") %></td>
+          <td class="px-6 py-4 text-right">
+            <%= link_to "Edit", edit_admin_user_path(user), class: "text-blaze-amber hover:text-white" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6"><%= blaze_pagy_nav(@pagy) %></div>

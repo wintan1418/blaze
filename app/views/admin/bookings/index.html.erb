@@ -1,0 +1,49 @@
+<% content_for :page_title, "Bookings" %>
+<%= render "admin/shared/page_header", title: "Bookings", subtitle: "Every reservation across Blaze Cafe" %>
+
+<div class="flex gap-2 mb-6 text-xs">
+  <%= link_to "All", admin_bookings_path, class: "chip #{params[:status].blank? ? 'bg-blaze-red text-white' : 'bg-white/5 text-white/60 hover:text-white'}" %>
+  <% %w[pending confirmed cancelled].each do |status| %>
+    <%= link_to status.capitalize, admin_bookings_path(status: status), class: "chip #{params[:status] == status ? 'bg-blaze-red text-white' : 'bg-white/5 text-white/60 hover:text-white'}" %>
+  <% end %>
+</div>
+
+<div class="card overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-white/5 text-xs uppercase tracking-widest text-white/50">
+      <tr>
+        <th class="text-left px-6 py-3">Ref</th>
+        <th class="text-left px-6 py-3">Customer</th>
+        <th class="text-left px-6 py-3">For</th>
+        <th class="text-left px-6 py-3">Seats</th>
+        <th class="text-left px-6 py-3">Total</th>
+        <th class="text-left px-6 py-3">Status</th>
+        <th class="text-left px-6 py-3">Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <% @bookings.each do |booking| %>
+        <tr class="hover:bg-white/5 transition">
+          <td class="px-6 py-4 font-mono text-xs"><%= booking.reference %></td>
+          <td class="px-6 py-4"><%= booking.user.email %></td>
+          <td class="px-6 py-4 text-white/60"><%= booking.bookable_type.underscore.humanize %></td>
+          <td class="px-6 py-4"><%= booking.seats %></td>
+          <td class="px-6 py-4 font-medium"><%= naira(booking.total_price_kobo) %></td>
+          <td class="px-6 py-4">
+            <% case booking.status
+               when "confirmed" %><span class="chip bg-emerald-500/10 text-emerald-300">Confirmed</span>
+            <% when "cancelled" %><span class="chip bg-white/5 text-white/40">Cancelled</span>
+            <% else %><span class="chip bg-blaze-amber/10 text-blaze-amber">Pending</span><% end %>
+          </td>
+          <td class="px-6 py-4 text-white/50 text-xs"><%= booking.created_at.strftime("%b %d · %I:%M %p") %></td>
+          <td class="px-6 py-4 text-right">
+            <%= link_to "View", admin_booking_path(booking), class: "text-blaze-amber hover:text-white" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6"><%= blaze_pagy_nav(@pagy) %></div>

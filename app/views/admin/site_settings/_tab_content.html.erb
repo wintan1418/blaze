@@ -1,0 +1,197 @@
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Hero section</h2>
+    <p class="text-sm text-white/50 mt-1">Top of the homepage — the first thing visitors see.</p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Top marker text</label>
+      <%= f.text_field :hero_eyebrow, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Live indicator label</label>
+      <%= f.text_field :hero_live_label, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Headline line 1</label>
+      <%= f.text_field :hero_headline_line1, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Headline line 2</label>
+      <%= f.text_field :hero_headline_line2, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Accent word (gets fire gradient)</label>
+      <%= f.text_field :hero_headline_accent, class: "input-blaze" %>
+      <p class="text-xs text-white/40 mt-1">Must be a word inside line 2.</p>
+    </div>
+    <div>
+      <label class="label-blaze">Footer mark (right side)</label>
+      <%= f.text_field :hero_footer_mark, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Subtitle</label>
+      <%= f.text_area :hero_subtitle, rows: 3, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Primary CTA</label>
+      <%= f.text_field :hero_cta_primary, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Secondary CTA</label>
+      <%= f.text_field :hero_cta_secondary, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Vibe gallery</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Eyebrow</label>
+      <%= f.text_field :vibe_eyebrow, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Headline</label>
+      <%= f.text_field :vibe_headline, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Body</label>
+      <%= f.text_area :vibe_body, rows: 3, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Featured dishes & experiences</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Dishes eyebrow</label>
+      <%= f.text_field :dishes_eyebrow, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Dishes headline</label>
+      <%= f.text_field :dishes_headline, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Experiences eyebrow</label>
+      <%= f.text_field :experiences_eyebrow, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Experiences headline</label>
+      <%= f.text_field :experiences_headline, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Testimonial</h2>
+  </div>
+  <div class="grid gap-5">
+    <div>
+      <label class="label-blaze">Quote</label>
+      <%= f.text_area :testimonial_quote, rows: 3, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Author</label>
+      <%= f.text_field :testimonial_author, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">CTA band</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div class="md:col-span-2">
+      <label class="label-blaze">Headline</label>
+      <%= f.text_field :cta_headline, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Body</label>
+      <%= f.text_area :cta_body, rows: 2, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">About page</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Eyebrow</label>
+      <%= f.text_field :about_eyebrow, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Headline</label>
+      <%= f.text_field :about_headline, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Body (blank lines = new paragraph)</label>
+      <%= f.text_area :about_body, rows: 8, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Contact page</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Eyebrow</label>
+      <%= f.text_field :contact_eyebrow, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Headline</label>
+      <%= f.text_field :contact_headline, class: "input-blaze" %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Body</label>
+      <%= f.text_area :contact_body, rows: 3, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Contact email</label>
+      <%= f.email_field :contact_email, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Contact phone</label>
+      <%= f.text_field :contact_phone, class: "input-blaze" %>
+    </div>
+  </div>
+</div>
+
+<div class="card p-6 space-y-6">
+  <div>
+    <h2 class="font-display text-xl font-bold">Socials & footer</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-5">
+    <div>
+      <label class="label-blaze">Instagram URL</label>
+      <%= f.url_field :instagram_url, class: "input-blaze", placeholder: "https://instagram.com/..." %>
+    </div>
+    <div>
+      <label class="label-blaze">TikTok URL</label>
+      <%= f.url_field :tiktok_url, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">X URL</label>
+      <%= f.url_field :x_url, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">WhatsApp URL</label>
+      <%= f.url_field :whatsapp_url, class: "input-blaze", placeholder: "https://wa.me/..." %>
+    </div>
+    <div class="md:col-span-2">
+      <label class="label-blaze">Footer tagline</label>
+      <%= f.text_area :footer_tagline, rows: 3, class: "input-blaze" %>
+    </div>
+  </div>
+</div>

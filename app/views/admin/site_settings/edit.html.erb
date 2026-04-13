@@ -1,0 +1,52 @@
+<% content_for :page_title, "Site Settings" %>
+<% content_for :page_subtitle, "Customize every part of the public site" %>
+
+<% tabs = [
+  [ "brand",    "Brand",    "Colors, logo, fonts" ],
+  [ "content",  "Content",  "Hero, about, testimonial, footer" ],
+  [ "sections", "Sections", "Toggle what appears on the home page" ],
+  [ "slides",   "Hero",     "The rotating hero reel" ]
+] %>
+
+<div class="grid grid-cols-12 gap-8">
+  <!-- Tab rail -->
+  <aside class="col-span-12 md:col-span-3">
+    <div class="card p-2">
+      <% tabs.each do |(key, label, hint)| %>
+        <% active = @tab == key %>
+        <% if key == "slides" %>
+          <%= link_to admin_hero_slides_path, class: "block px-4 py-3 rounded-xl text-sm transition text-white/70 hover:bg-white/5 hover:text-white" do %>
+            <p class="font-medium"><%= label %></p>
+            <p class="text-xs text-white/40 mt-0.5"><%= hint %></p>
+          <% end %>
+        <% else %>
+          <%= link_to edit_admin_site_setting_path(tab: key),
+                class: "block px-4 py-3 rounded-xl text-sm transition #{active ? 'bg-blaze-red/15 border border-blaze-red/30 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white border border-transparent'}" do %>
+            <p class="font-medium"><%= label %></p>
+            <p class="text-xs text-white/40 mt-0.5"><%= hint %></p>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </aside>
+
+  <!-- Form -->
+  <div class="col-span-12 md:col-span-9">
+    <%= form_with model: @setting, url: admin_site_setting_path(tab: @tab), method: :patch, multipart: true, class: "space-y-8" do |f| %>
+      <% if @setting.errors.any? %>
+        <div class="card p-4 border-red-500/30 bg-red-500/5">
+          <ul class="text-xs text-red-300/80 list-disc list-inside">
+            <% @setting.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= render "tab_#{@tab}", f: f %>
+
+      <div class="card p-5 flex items-center justify-between">
+        <p class="text-sm text-white/50">Changes apply immediately after saving.</p>
+        <%= f.submit "Save changes", class: "btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

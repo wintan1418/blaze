@@ -1,0 +1,39 @@
+<% content_for :page_title, "Cinema" %>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-12">
+  <span class="chip bg-purple-500/10 text-purple-300">Cinema</span>
+  <h1 class="font-display text-5xl md:text-7xl font-black mt-6">Tonight's <span class="fire-text italic">show</span>.</h1>
+  <p class="mt-6 text-lg text-white/60 max-w-2xl">Intimate screenings in our 20-seat private rooms. Reserve seats, grab a drink, press play.</p>
+</section>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 pb-24">
+  <% if @screenings.any? %>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @screenings.each do |screening| %>
+        <%= link_to screening_path(screening), class: "card overflow-hidden hover:-translate-y-1 hover:border-blaze-red/40 transition block group" do %>
+          <div class="aspect-[3/4] bg-linear-to-br from-purple-900/40 via-blaze-smoke to-blaze-ash grid place-items-center overflow-hidden">
+            <% if screening.poster.attached? %>
+              <%= image_tag screening.poster, class: "w-full h-full object-cover group-hover:scale-105 transition duration-700" %>
+            <% else %>
+              <span class="font-display text-6xl font-bold text-white/10">●</span>
+            <% end %>
+          </div>
+          <div class="p-6">
+            <p class="text-xs uppercase tracking-widest text-blaze-amber"><%= screening.starts_at.strftime("%A · %I:%M %p") %></p>
+            <h3 class="font-display text-2xl font-bold mt-2"><%= screening.title %></h3>
+            <p class="text-sm text-white/60 mt-3 line-clamp-2"><%= screening.synopsis %></p>
+            <div class="flex items-center justify-between mt-5">
+              <p class="font-display text-xl font-bold"><%= naira(screening.price_kobo) %></p>
+              <p class="text-xs text-white/50"><%= screening.seats_remaining %> / <%= screening.screen.capacity %> seats</p>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="mt-12 flex justify-center"><%= blaze_pagy_nav(@pagy) %></div>
+  <% else %>
+    <div class="card p-12 text-center">
+      <p class="text-white/50">No screenings scheduled right now. Check back soon.</p>
+    </div>
+  <% end %>
+</section>
