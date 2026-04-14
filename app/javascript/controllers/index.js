@@ -12,6 +12,7 @@ import CountUpController from "./count_up_controller"
 import MagneticController from "./magnetic_controller"
 import ParallaxController from "./parallax_controller"
 import TiltController from "./tilt_controller"
+import ExplodeRevealController from "./explode_reveal_controller"
 
 application.register("hello", HelloController)
 application.register("nav", NavController)
@@ -25,3 +26,4 @@ application.register("count-up", CountUpController)
 application.register("magnetic", MagneticController)
 application.register("parallax", ParallaxController)
 application.register("tilt", TiltController)
+application.register("explode-reveal", ExplodeRevealController)
