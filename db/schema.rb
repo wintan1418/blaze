@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_225829) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_14_104022) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -120,6 +120,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_225829) do
     t.string "slug"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_locations_on_slug", unique: true
+  end
+
+  create_table "loyalty_stamps", force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "earned_at", null: false
+    t.boolean "redeemed", default: false, null: false
+    t.datetime "redeemed_at"
+    t.bigint "redeemed_by_id"
+    t.string "redemption_note"
+    t.bigint "source_id"
+    t.string "source_type"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["redeemed"], name: "index_loyalty_stamps_on_redeemed"
+    t.index ["redeemed_by_id"], name: "index_loyalty_stamps_on_redeemed_by_id"
+    t.index ["source_type", "source_id"], name: "index_loyalty_stamps_on_source"
+    t.index ["user_id", "category"], name: "index_loyalty_stamps_on_user_id_and_category"
+    t.index ["user_id"], name: "index_loyalty_stamps_on_user_id"
   end
 
   create_table "menu_categories", force: :cascade do |t|
@@ -346,6 +365,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_225829) do
   add_foreign_key "bookings", "users"
   add_foreign_key "gaming_consoles", "locations"
   add_foreign_key "gaming_slots", "gaming_consoles"
+  add_foreign_key "loyalty_stamps", "users"
+  add_foreign_key "loyalty_stamps", "users", column: "redeemed_by_id"
   add_foreign_key "menu_items", "menu_categories"
   add_foreign_key "offline_sales", "locations"
   add_foreign_key "offline_sales", "menu_items"

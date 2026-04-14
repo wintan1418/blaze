@@ -1,0 +1,59 @@
+<% content_for :page_title, "Today's Bookings" %>
+
+<div class="mb-6">
+  <h1 class="font-display text-3xl md:text-4xl font-black">Today's bookings</h1>
+  <p class="text-sm text-white/50 mt-1"><%= Time.current.strftime("%A, %B %d") %></p>
+</div>
+
+<% if @bookings.any? %>
+  <div class="grid md:grid-cols-2 gap-4">
+    <% @bookings.each do |booking| %>
+      <div class="card p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <p class="font-mono text-xs text-white/40"><%= booking.reference %></p>
+            <p class="font-display text-xl font-bold mt-1"><%= booking.user.display_name %></p>
+            <p class="text-sm text-white/60"><%= booking.user.phone %></p>
+          </div>
+          <span class="chip <%= booking.paid? ? 'bg-emerald-500/10 text-emerald-300' : 'bg-blaze-amber/10 text-blaze-amber' %>">
+            <%= booking.paid? ? "Paid" : "Unpaid" %>
+          </span>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-white/5">
+          <p class="label-blaze">For</p>
+          <% if booking.bookable.is_a?(GamingSlot) %>
+            <p class="font-medium mt-1">🎮 <%= booking.bookable.gaming_console.label %></p>
+            <p class="text-sm text-white/60"><%= booking.bookable.gaming_console.location.name %></p>
+          <% elsif booking.bookable.is_a?(Screening) %>
+            <p class="font-medium mt-1">🎬 <%= booking.bookable.title %></p>
+            <p class="text-sm text-white/60"><%= booking.bookable.screen.location.name %> · <%= pluralize(booking.seats, "seat") %></p>
+          <% end %>
+          <p class="text-blaze-amber text-sm mt-1"><%= booking.bookable.starts_at.strftime("%I:%M %p") %></p>
+        </div>
+
+        <% if booking.notes.present? %>
+          <p class="text-xs text-white/50 mt-3">📝 <%= booking.notes %></p>
+        <% end %>
+
+        <div class="mt-5 flex gap-2">
+          <%= button_to check_in_staff_booking_path(booking), method: :patch,
+                class: "btn-primary text-sm flex-1",
+                form: { data: { turbo: false } } do %>
+            Check in
+          <% end %>
+          <%= button_to cancel_staff_booking_path(booking), method: :patch,
+                class: "btn-ghost text-sm",
+                form: { data: { turbo_confirm: "Cancel this booking?", turbo: false } } do %>
+            Cancel
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card p-12 text-center">
+    <p class="font-display text-2xl text-white/60">No bookings for today.</p>
+    <p class="text-sm text-white/40 mt-2">Nobody on the schedule yet.</p>
+  </div>
+<% end %>

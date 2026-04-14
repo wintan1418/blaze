@@ -32,6 +32,18 @@ class Booking < ApplicationRecord
     update!(payment_status: "paid", paid_at: at, status: "confirmed")
     BookingMailer.confirmation(self).deliver_later rescue nil
     TermiiClient.send_booking_confirmation(self) rescue nil
+    award_loyalty_stamp
+  end
+
+  def loyalty_category
+    case bookable_type
+    when "GamingSlot" then "gaming"
+    when "Screening"  then "cinema"
+    end
+  end
+
+  def check_in!
+    update!(status: "confirmed", notes: "#{notes} [checked in #{Time.current.strftime('%I:%M %p')}]".strip)
   end
 
   def cancel!
@@ -67,5 +79,13 @@ class Booking < ApplicationRecord
     )
   rescue StandardError
     # Broadcasting is best-effort; never block booking creation on it
+  end
+
+  def award_loyalty_stamp
+    category = loyalty_category
+    return unless category
+    LoyaltyStamp.award_for!(user: user, source: self, category: category, earned_at: paid_at || Time.current)
+  rescue StandardError => e
+    Rails.logger.warn("[LoyaltyStamp] award failed: #{e.message}")
   end
 end

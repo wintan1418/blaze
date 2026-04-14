@@ -42,6 +42,27 @@ Rails.application.routes.draw do
   # Locations
   resources :locations, only: [ :index, :show ]
 
+  # Staff floor view (staff + admin)
+  namespace :staff do
+    root to: "dashboard#index"
+    resources :orders, only: [ :index, :show ] do
+      member do
+        patch :advance
+        patch :cancel
+      end
+    end
+    resources :bookings, only: [ :index ] do
+      member do
+        patch :check_in
+        patch :cancel
+      end
+    end
+    resources :offline_sales, only: [ :new, :create ]
+    resources :loyalty_stamps, only: [ :new, :create ] do
+      member { patch :redeem }
+    end
+  end
+
   # Admin (hand-rolled)
   namespace :admin do
     root to: "dashboard#index"

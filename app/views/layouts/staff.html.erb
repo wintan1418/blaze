@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-blaze-ink">
+  <head>
+    <title>Staff · <%= content_for?(:page_title) ? content_for(:page_title) : site_setting.site_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="<%= site_setting.google_fonts_href %>" rel="stylesheet">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+
+    <style>
+      :root {
+        <% site_setting.css_variables.each do |key, value| %>
+          <%= key %>: <%= value %>;
+        <% end %>
+      }
+    </style>
+  </head>
+
+  <body class="font-body text-zinc-100 min-h-screen flex flex-col">
+    <header class="sticky top-0 z-40 bg-blaze-ink/95 backdrop-blur border-b border-white/5">
+      <div class="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+        <%= link_to staff_root_path, class: "flex items-center gap-2" do %>
+          <span class="w-8 h-8 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-display font-bold text-white text-sm"><%= site_setting.logo_mark %></span>
+          <span class="font-display font-bold tracking-tight"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span>staff</span>
+        <% end %>
+
+        <nav class="flex items-center gap-1 text-sm font-medium">
+          <% [
+            [ "Home",    staff_root_path,            "⌂" ],
+            [ "Orders",  staff_orders_path,          "◍" ],
+            [ "Bookings",staff_bookings_path,        "●" ],
+            [ "Sale",    new_staff_offline_sale_path, "₦" ],
+            [ "Loyalty", new_staff_loyalty_stamp_path,"★" ]
+          ].each do |(label, path, icon)| %>
+            <% active = request.path == path || request.path.start_with?(path + "/") %>
+            <%= link_to path, class: "px-3 md:px-4 py-2 rounded-xl transition flex items-center gap-2 #{active ? 'bg-blaze-red text-white' : 'text-white/70 hover:text-white hover:bg-white/5'}" do %>
+              <span class="text-blaze-amber/80"><%= icon %></span>
+              <span class="hidden sm:inline"><%= label %></span>
+            <% end %>
+          <% end %>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden md:block text-right">
+            <p class="text-xs text-white/60"><%= current_user.display_name %></p>
+            <p class="text-[10px] text-white/40 uppercase tracking-widest"><%= current_user.role %></p>
+          </div>
+          <%= button_to destroy_user_session_path, method: :delete,
+                class: "w-9 h-9 rounded-full border border-white/10 grid place-items-center text-white/60 hover:text-white hover:border-blaze-red transition",
+                form: { data: { turbo: false } } do %>
+            ⎋
+          <% end %>
+        </div>
+      </div>
+    </header>
+
+    <%= render "shared/flash" %>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-6 md:py-10">
+      <%= yield %>
+    </main>
+  </body>
+</html>

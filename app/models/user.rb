@@ -8,6 +8,11 @@ class User < ApplicationRecord
   has_many :reviews, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :orders, dependent: :destroy
+  has_many :loyalty_stamps, dependent: :destroy
+
+  def staff_or_admin?
+    staff? || admin?
+  end
 
   validates :full_name, presence: true, on: :update, if: -> { will_save_change_to_full_name? }
 

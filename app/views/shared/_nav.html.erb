@@ -33,6 +33,9 @@
       <% if user_signed_in? %>
         <%= link_to "Orders", orders_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
         <%= link_to "Bookings", bookings_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
+        <% if current_user.staff_or_admin? %>
+          <%= link_to "Staff", staff_root_path, class: "hidden sm:inline text-sm text-emerald-300 hover:text-white transition" %>
+        <% end %>
         <% if current_user.admin? %>
           <%= link_to "Admin", admin_root_path, class: "hidden sm:inline text-sm text-blaze-amber hover:text-white transition" %>
         <% end %>

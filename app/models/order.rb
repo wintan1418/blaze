@@ -51,6 +51,16 @@ class Order < ApplicationRecord
     update!(payment_status: "paid", paid_at: at, status: "preparing")
     self.update!(delivery_status: "pending") if delivery? && delivery_status == "none"
     TermiiClient.send_order_confirmation(self) rescue nil
+    award_food_stamp
+  end
+
+  def advance_status!
+    next_status = case status
+                  when "pending"   then "preparing"
+                  when "preparing" then "ready"
+                  when "ready"     then "completed"
+                  end
+    update!(status: next_status) if next_status
   end
 
   def mark_dispatched!
@@ -81,5 +91,11 @@ class Order < ApplicationRecord
 
   def set_delivery_status_default
     self.delivery_status = delivery? ? "pending" : "none" if delivery_status.blank?
+  end
+
+  def award_food_stamp
+    LoyaltyStamp.award_for!(user: user, source: self, category: "food", earned_at: paid_at || Time.current)
+  rescue StandardError => e
+    Rails.logger.warn("[LoyaltyStamp] food award failed: #{e.message}")
   end
 end

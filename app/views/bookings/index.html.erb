@@ -4,6 +4,45 @@
   <span class="chip bg-blaze-red/10 text-blaze-red">Your bookings</span>
   <h1 class="font-display text-5xl md:text-6xl font-black mt-4">Welcome back, <span class="fire-text"><%= current_user.display_name %></span>.</h1>
 
+  <!-- Loyalty progress -->
+  <% progress = LoyaltyStamp.progress_for(current_user) %>
+  <% if progress.any? %>
+    <section class="mt-12 card p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <span class="chip bg-blaze-amber/10 text-blaze-amber">Loyalty</span>
+          <h2 class="font-display text-2xl font-bold mt-2">Your rewards</h2>
+        </div>
+        <p class="text-xs text-white/40 text-right">Collect <%= LoyaltyStamp::STAMPS_PER_REWARD %><br>get 1 free</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-5">
+        <% LoyaltyStamp::CATEGORIES.each do |category| %>
+          <% count = progress[category] || 0 %>
+          <% remainder = count % LoyaltyStamp::STAMPS_PER_REWARD %>
+          <% rewards = count / LoyaltyStamp::STAMPS_PER_REWARD %>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <p class="font-display text-lg font-bold capitalize"><%= category %></p>
+              <p class="font-display text-xl font-black fire-text"><%= count %></p>
+            </div>
+            <div class="flex gap-1">
+              <% LoyaltyStamp::STAMPS_PER_REWARD.times do |i| %>
+                <div class="flex-1 h-2.5 rounded-full <%= i < remainder ? 'bg-blaze-red' : 'bg-white/5' %>"></div>
+              <% end %>
+            </div>
+            <p class="text-xs mt-2 <%= rewards > 0 ? 'text-emerald-300' : 'text-white/40' %>">
+              <% if rewards > 0 %>
+                ✨ <%= pluralize(rewards, "reward") %> ready — show staff to claim
+              <% else %>
+                <%= LoyaltyStamp::STAMPS_PER_REWARD - remainder %> more for <%= LoyaltyStamp.reward_label(category).downcase %>
+              <% end %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <% if @bookings.any? %>
     <div class="mt-12 space-y-4">
       <% @bookings.each do |booking| %>
