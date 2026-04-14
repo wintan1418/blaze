@@ -303,54 +303,51 @@
             <p class="font-display text-[140px] font-black leading-none text-transparent bg-clip-text bg-linear-to-br from-blaze-red/30 to-transparent">01</p>
           </div>
 
-          <div class="grid grid-cols-6 grid-rows-6 gap-3 md:gap-4 h-[480px] md:h-[620px] relative">
+          <div class="grid grid-cols-6 grid-rows-6 gap-3 md:gap-4 h-[520px] md:h-[620px] relative">
             <!-- Hero image — tall portrait spanning 3 cols / full height -->
-            <div class="col-span-3 row-span-6 relative reveal" data-controller="tilt" data-tilt-max-value="5" style="transform-style: preserve-3d;">
-              <div class="absolute inset-0 rounded-[2rem] overflow-hidden bg-cover bg-center shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/10"
-                   style="background-image: url('<%= urls[0] %>');">
-                <!-- Sticker -->
-                <div class="absolute top-4 left-4 chip bg-black/60 backdrop-blur text-blaze-amber border border-white/15 text-[10px]">
-                  ● LIVE TONIGHT
-                </div>
-                <!-- Caption -->
-                <div class="absolute bottom-4 left-4 right-4">
-                  <p class="text-[10px] tracking-[0.3em] uppercase text-white/60">01 · The floor</p>
-                  <p class="font-display text-lg font-bold text-white mt-1 drop-shadow-lg">House of Blaze</p>
-                </div>
-                <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/80 via-transparent to-transparent"></div>
+            <div class="col-span-3 row-span-6 relative rounded-[2rem] overflow-hidden ring-1 ring-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] reveal group/vibe"
+                 data-controller="tilt" data-tilt-max-value="5">
+              <img src="<%= urls[0] %>" alt="Blaze floor"
+                   class="absolute inset-0 w-full h-full object-cover transition duration-[1200ms] group-hover/vibe:scale-110">
+              <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/85 via-blaze-ink/10 to-transparent"></div>
+              <div class="absolute top-4 left-4 chip bg-black/60 backdrop-blur text-blaze-amber border border-white/15 text-[10px]">
+                ● LIVE TONIGHT
+              </div>
+              <div class="absolute bottom-5 left-5 right-5">
+                <p class="text-[10px] tracking-[0.3em] uppercase text-white/60">01 · The floor</p>
+                <p class="font-display text-lg md:text-xl font-bold text-white mt-1 drop-shadow-lg">House of Blaze</p>
               </div>
             </div>
 
             <!-- Upper-right wide image -->
-            <div class="col-span-3 row-span-3 relative reveal" data-controller="tilt" data-tilt-max-value="6">
-              <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden bg-cover bg-center ring-1 ring-white/10"
-                   style="background-image: url('<%= urls[1] %>');">
-                <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/70 to-transparent"></div>
-                <div class="absolute bottom-3 left-4">
-                  <p class="text-[9px] tracking-[0.3em] uppercase text-white/60">02 · Plates</p>
-                </div>
+            <div class="col-span-3 row-span-3 relative rounded-[1.5rem] overflow-hidden ring-1 ring-white/10 reveal group/vibe"
+                 data-controller="tilt" data-tilt-max-value="6">
+              <img src="<%= urls[1] %>" alt="Blaze plates"
+                   class="absolute inset-0 w-full h-full object-cover transition duration-[1200ms] group-hover/vibe:scale-110">
+              <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/75 to-transparent"></div>
+              <div class="absolute bottom-3 left-4">
+                <p class="text-[9px] tracking-[0.3em] uppercase text-white/70">02 · Plates</p>
               </div>
             </div>
 
             <!-- Lower-right left square -->
-            <div class="col-span-2 row-span-3 relative reveal" data-controller="tilt" data-tilt-max-value="6">
-              <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden bg-cover bg-center ring-1 ring-white/10"
-                   style="background-image: url('<%= urls[2] %>');">
-                <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/70 to-transparent"></div>
-                <div class="absolute bottom-3 left-3">
-                  <p class="text-[9px] tracking-[0.3em] uppercase text-white/60">03 · Heat</p>
-                </div>
+            <div class="col-span-2 row-span-3 relative rounded-[1.5rem] overflow-hidden ring-1 ring-white/10 reveal group/vibe"
+                 data-controller="tilt" data-tilt-max-value="6">
+              <img src="<%= urls[2] %>" alt="Blaze heat"
+                   class="absolute inset-0 w-full h-full object-cover transition duration-[1200ms] group-hover/vibe:scale-110">
+              <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/75 to-transparent"></div>
+              <div class="absolute bottom-3 left-3">
+                <p class="text-[9px] tracking-[0.3em] uppercase text-white/70">03 · Heat</p>
               </div>
             </div>
 
             <!-- Lower-right right square (with fire accent border) -->
-            <div class="col-span-1 row-span-3 relative reveal">
-              <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden bg-cover bg-center ring-1 ring-blaze-red/40 shadow-[0_0_40px_-5px_rgba(232,52,26,0.4)]"
-                   style="background-image: url('<%= urls[3] %>');">
-                <div class="absolute inset-0 bg-linear-to-t from-blaze-red/40 via-blaze-ink/30 to-transparent"></div>
-                <div class="absolute inset-0 grid place-items-center">
-                  <span class="font-display text-4xl font-black fire-text">04</span>
-                </div>
+            <div class="col-span-1 row-span-3 relative rounded-[1.5rem] overflow-hidden ring-1 ring-blaze-red/40 shadow-[0_0_40px_-5px_rgba(232,52,26,0.4)] reveal">
+              <img src="<%= urls[3] %>" alt="Blaze moment"
+                   class="absolute inset-0 w-full h-full object-cover">
+              <div class="absolute inset-0 bg-linear-to-t from-blaze-red/50 via-blaze-ink/40 to-blaze-ink/20"></div>
+              <div class="absolute inset-0 grid place-items-center">
+                <span class="font-display text-4xl md:text-5xl font-black fire-text drop-shadow-[0_4px_20px_rgba(232,52,26,0.6)]">04</span>
               </div>
             </div>
           </div>
