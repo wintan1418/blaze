@@ -1,6 +1,6 @@
 class SpecialsController < ApplicationController
   def index
-    @specials = Special.live_now.ordered
+    @specials = Special.active.ordered
   end
 
   def show

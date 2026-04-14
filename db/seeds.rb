@@ -678,6 +678,103 @@ if OfflineSale.count < 40
   puts "  ✓ Seeded offline sales: #{OfflineSale.count}"
 end
 
+# ------------------------------------------------------------ Daily specials
+# Image URLs are verified Unsplash photo IDs — same source as hero + menu seeds.
+unsplash_url = ->(id, w: 1200, h: 900) {
+  "https://images.unsplash.com/photo-#{id}?w=#{w}&h=#{h}&fit=crop&q=80&auto=format"
+}
+
+specials_data = [
+  {
+    name: "Ofada Rice Special",
+    description: "House-made ofada rice with ayamase (designer stew), boiled egg and assorted meats. A Blaze classic — served hot.",
+    kind: "food",
+    price: 2000,
+    original: 3500,
+    slots: 25,
+    hours: [ 11, 16 ],
+    image: unsplash_url.call("1604329760661-e71dc83f8f26"),
+    menu_item_slug: "signature-jollof-rice"
+  },
+  {
+    name: "Abula Combo",
+    description: "Amala + ewedu + gbegiri + assorted (ponmo, shaki, orisirisi). The real Yoruba thing.",
+    kind: "food",
+    price: 1800,
+    original: 2800,
+    slots: 20,
+    hours: [ 12, 17 ],
+    image: unsplash_url.call("1528605248644-14dd04022da1")
+  },
+  {
+    name: "Blaze Burger Night",
+    description: "Double beef patty + cheddar + bacon + curly fries + smoothie. Burger night — limited to 15 slots a day.",
+    kind: "food",
+    price: 3500,
+    original: 4800,
+    slots: 15,
+    hours: [ 18, 22 ],
+    image: unsplash_url.call("1568901346375-23c9450c58cd"),
+    menu_item_slug: "blaze-burger"
+  },
+  {
+    name: "Cinema Pair Deal",
+    description: "Two seats + large popcorn + 2 drinks. Perfect date-night drop at the Main Cinema.",
+    kind: "cinema",
+    price: 6000,
+    original: 8500,
+    slots: 10,
+    hours: [ 18, 23 ],
+    image: unsplash_url.call("1489599849927-2ee91cede3ba")
+  },
+  {
+    name: "Happy Hour Mocktails",
+    description: "Buy any signature mocktail, get the second one half-price. Chapman, mojito, Blaze Smoothie — you pick.",
+    kind: "drink",
+    price: 1200,
+    original: 2400,
+    slots: 50,
+    hours: [ 16, 19 ],
+    image: unsplash_url.call("1551024709-8f23befc6f87")
+  },
+  {
+    name: "Gaming Squad Hour",
+    description: "Book 4 consoles for 1 hour at the price of 3. Roll deep with your squad — once a night only.",
+    kind: "gaming",
+    price: 4500,
+    original: 6000,
+    slots: 12,
+    hours: [ 17, 21 ],
+    image: unsplash_url.call("1550745165-9bc0b252726f")
+  }
+]
+
+today_beginning = Time.current.beginning_of_day
+specials_location = Location.active.first
+
+specials_data.each do |data|
+  starts = today_beginning + data[:hours][0].hours
+  ends   = today_beginning + data[:hours][1].hours
+  special = Special.find_or_initialize_by(slug: data[:name].parameterize)
+  special.assign_attributes(
+    name: data[:name],
+    description: data[:description],
+    kind: data[:kind],
+    price_kobo: data[:price] * 100,
+    original_price_kobo: data[:original] * 100,
+    slots_total: data[:slots],
+    slots_claimed: special.slots_claimed.to_i.positive? ? special.slots_claimed : rand(0..(data[:slots] / 3)),
+    starts_at: starts,
+    ends_at: ends,
+    active: true,
+    location: specials_location,
+    menu_item: data[:menu_item_slug] ? MenuItem.find_by(slug: data[:menu_item_slug]) : nil,
+    image_url: data[:image]
+  )
+  special.save!
+end
+puts "  ✓ Seeded specials: #{Special.count} (#{Special.where.not(image_url: nil).count} with images)"
+
 # ------------------------------------------------------------ Summary
 puts "─" * 60
 puts "🔥 BLAZE CAFE — seed complete"
