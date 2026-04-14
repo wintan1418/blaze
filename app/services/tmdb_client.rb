@@ -65,27 +65,43 @@ class TmdbClient
 
     private
 
+    MAX_ATTEMPTS = 4
+
     def get(path, params = {})
-      uri = URI.join(API_BASE, path.sub(%r{\A/}, ""))
-      uri.query = URI.encode_www_form(params)
+      attempts = 0
+      begin
+        attempts += 1
+        # Build the URI manually — URI.join drops the /3 path segment when the
+        # base doesn't end in a slash, so "https://api.themoviedb.org/3" +
+        # "search/movie" becomes "/search/movie". Don't use URI.join here.
+        uri = URI.parse("#{API_BASE}/#{path.sub(%r{\A/}, '')}")
+        uri.query = URI.encode_www_form(params)
 
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.read_timeout = 15
-      http.open_timeout = 10
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.read_timeout = 25
+        http.open_timeout = 15
+        http.ssl_timeout  = 15
 
-      res = http.request(Net::HTTP::Get.new(uri.request_uri))
-      parsed = JSON.parse(res.body.to_s)
+        res = http.request(Net::HTTP::Get.new(uri.request_uri))
+        parsed = JSON.parse(res.body.to_s)
 
-      unless res.is_a?(Net::HTTPSuccess)
-        raise Error, "TMDB #{res.code}: #{parsed['status_message'] || res.body}"
+        unless res.is_a?(Net::HTTPSuccess)
+          raise Error, "TMDB #{res.code}: #{parsed['status_message'] || res.body}"
+        end
+
+        parsed
+      rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNRESET => e
+        if attempts < MAX_ATTEMPTS
+          delay = 0.5 * (2**(attempts - 1))
+          Rails.logger.warn("[TMDB] #{e.class} on attempt #{attempts}/#{MAX_ATTEMPTS}, retrying in #{delay}s")
+          sleep delay
+          retry
+        end
+        raise Error, "TMDB unreachable after #{attempts} attempts: #{e.message}"
+      rescue JSON::ParserError
+        raise Error, "TMDB returned invalid JSON"
       end
-
-      parsed
-    rescue JSON::ParserError
-      raise Error, "TMDB returned invalid JSON"
-    rescue Net::OpenTimeout, Net::ReadTimeout, SocketError => e
-      raise Error, "TMDB unreachable: #{e.message}"
     end
   end
 end
