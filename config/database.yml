@@ -2,35 +2,47 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: blaze_cafe_development
   <% if ENV["DB_HOST"].present? %>
   host: <%= ENV["DB_HOST"] %>
   username: <%= ENV.fetch("DB_USERNAME") { ENV["USER"] } %>
   password: <%= ENV["DB_PASSWORD"] %>
   <% end %>
 
-development:
-  <<: *default
-  database: blaze_cafe_development
-
 test:
   <<: *default
   database: blaze_cafe_test
+  <% if ENV["DB_HOST"].present? %>
+  host: <%= ENV["DB_HOST"] %>
+  username: <%= ENV.fetch("DB_USERNAME") { ENV["USER"] } %>
+  password: <%= ENV["DB_PASSWORD"] %>
+  <% end %>
 
+# Production: Rails will use ENV["DATABASE_URL"] if present (Hatchbox / Kamal
+# typically sets this). Otherwise we force TCP over localhost with the
+# BLAZE_CAFE_DATABASE_PASSWORD env var, which avoids PostgreSQL peer auth —
+# peer auth on a Unix socket requires the OS username to match the DB user,
+# and `deploy` is not `blaze_cafe`, so we MUST connect via TCP.
 production:
   primary: &primary_production
     <<: *default
-    database: blaze_cafe_production
-    username: blaze_cafe
+    host: <%= ENV.fetch("DB_HOST", "localhost") %>
+    port: <%= ENV.fetch("DB_PORT", 5432) %>
+    database: <%= ENV.fetch("BLAZE_CAFE_DATABASE_NAME", "blaze_cafe_production") %>
+    username: <%= ENV.fetch("BLAZE_CAFE_DATABASE_USERNAME", "blaze_cafe") %>
     password: <%= ENV["BLAZE_CAFE_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
-    database: blaze_cafe_production_cache
+    database: <%= ENV.fetch("BLAZE_CAFE_CACHE_DATABASE_NAME", "blaze_cafe_production_cache") %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: blaze_cafe_production_queue
+    database: <%= ENV.fetch("BLAZE_CAFE_QUEUE_DATABASE_NAME", "blaze_cafe_production_queue") %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: blaze_cafe_production_cable
+    database: <%= ENV.fetch("BLAZE_CAFE_CABLE_DATABASE_NAME", "blaze_cafe_production_cable") %>
     migrations_paths: db/cable_migrate
