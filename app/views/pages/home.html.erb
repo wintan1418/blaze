@@ -404,8 +404,12 @@
       <% end %>
     </div>
 
-    <!-- Reel container with arrow buttons -->
-    <div class="relative group/reel" data-controller="horizontal-scroll" data-horizontal-scroll-step-value="380">
+    <!-- Reel container with arrow buttons + auto-scroll -->
+    <div class="relative group/reel"
+         data-controller="horizontal-scroll"
+         data-horizontal-scroll-step-value="380"
+         data-horizontal-scroll-auto-value="true"
+         data-horizontal-scroll-speed-value="0.6">
       <!-- Left arrow -->
       <button type="button"
               data-action="click->horizontal-scroll#prev"
