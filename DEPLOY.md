@@ -24,6 +24,7 @@ Hatchbox already sets that.
 | `TERMII_API_KEY`        | your Termii key                          | ✅ |
 | `TERMII_SENDER_ID`      | e.g. `BLAZE` (must be approved)          | ✅ |
 | `TERMII_LIVE`           | `true`                                   | ✅ |
+| `TMDB_API_KEY`          | free v3 key from themoviedb.org/settings/api | recommended |
 | `SMTP_*`                | SMTP credentials for Devise emails       | optional |
 | `CLOUDINARY_URL`        | if you switch ActiveStorage to Cloudinary | optional |
 
@@ -55,6 +56,22 @@ https://yourdomain/payments/webhook
 
 Paystack will POST `charge.success` events there; `PaymentsController#webhook`
 verifies the HMAC signature and finalizes payments asynchronously.
+
+## TMDB (real movie posters)
+
+Seeds include Nollywood film titles (Gangs of Lagos, The Black Book,
+A Tribe Called Judah, etc). Without a TMDB key they render with stock
+cinema photography. With a key, the seed and the
+`rails tmdb:refresh_posters` rake task pull real posters from
+themoviedb.org.
+
+Get a free API key (takes 60 seconds):
+1. Sign up at https://www.themoviedb.org/signup
+2. Request an API key at https://www.themoviedb.org/settings/api (v3)
+3. Set `TMDB_API_KEY=your_key` in Hatchbox env
+4. SSH in and run: `bundle exec rails tmdb:refresh_posters`
+
+To force a full re-fetch, run `bundle exec rails tmdb:clear` first.
 
 ## Termii SMS
 

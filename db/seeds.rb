@@ -697,6 +697,35 @@ films.each_with_index do |film, film_idx|
 end
 puts "  ✓ Screenings: #{Screening.count}"
 
+# ------------------------------------------------------------ TMDB real posters
+# If TMDB_API_KEY is set, replace every screening's placeholder poster with
+# the real one from The Movie Database. Idempotent — skips screenings that
+# already have a tmdb_id cached.
+if TmdbClient.configured?
+  puts "  🎬 Fetching real posters from TMDB..."
+  refreshed = 0
+  Screening.find_each do |screening|
+    next if screening.tmdb_id.present? && screening.poster.attached?
+    begin
+      match = TmdbClient.search_movie(screening.title)
+      next unless match && match[:poster_path]
+
+      url = TmdbClient.poster_url(match[:poster_path], size: "w780")
+      io  = URI.parse(url).open(read_timeout: 15, "User-Agent" => "BlazeCafe/1.0")
+
+      screening.update(tmdb_id: match[:id], tmdb_poster_path: match[:poster_path])
+      screening.poster.purge if screening.poster.attached?
+      screening.poster.attach(io: io, filename: "tmdb-#{match[:id]}.jpg", content_type: "image/jpeg")
+      refreshed += 1
+    rescue StandardError => e
+      warn "   ⚠️  TMDB poster for '#{screening.title}': #{e.class}: #{e.message}"
+    end
+  end
+  puts "  ✓ TMDB posters refreshed: #{refreshed}"
+else
+  puts "  ⊘ TMDB_API_KEY not set — using stock cinema photography. Set the key and re-run `rails db:seed` or `rails tmdb:refresh_posters` for real posters."
+end
+
 # ------------------------------------------------------------ Sample history (so dashboards + charts have data)
 # Seeds realistic paid bookings, paid online orders, and offline sales spread
 # across the last 30 days so the analytics dashboard lights up immediately.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_14_114414) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_14_133524) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -273,6 +273,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_114414) do
     t.datetime "starts_at", null: false
     t.text "synopsis"
     t.string "title"
+    t.integer "tmdb_id"
+    t.string "tmdb_poster_path"
     t.datetime "updated_at", null: false
     t.index ["screen_id"], name: "index_screenings_on_screen_id"
     t.index ["slug"], name: "index_screenings_on_slug", unique: true
