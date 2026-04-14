@@ -22,25 +22,45 @@
     </style>
   </head>
 
-  <body class="font-body text-zinc-100 min-h-screen">
-    <div class="flex min-h-screen">
-      <%= render "admin/shared/sidebar" %>
+  <body class="font-body text-zinc-100 min-h-screen" data-controller="drawer">
+    <!-- Mobile backdrop -->
+    <div data-drawer-target="backdrop"
+         data-action="click->drawer#close"
+         class="lg:hidden hidden fixed inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300 z-40"></div>
 
-      <div class="flex-1 flex flex-col">
-        <header class="border-b border-white/5 px-8 py-5 flex items-center justify-between sticky top-0 bg-blaze-ink/80 backdrop-blur z-20">
-          <div>
-            <h1 class="font-display text-2xl font-bold"><%= content_for?(:page_title) ? content_for(:page_title) : "Dashboard" %></h1>
-            <p class="text-xs uppercase tracking-widest text-white/40 mt-1"><%= content_for?(:page_subtitle) ? content_for(:page_subtitle) : Time.current.strftime("%A, %b %d") %></p>
+    <div class="flex min-h-screen">
+      <!-- Sidebar — off-canvas on mobile, fixed on desktop -->
+      <div data-drawer-target="panel"
+           data-drawer-closed-class="-translate-x-full lg:translate-x-0"
+           class="fixed lg:relative top-0 left-0 bottom-0 z-50 w-72 lg:w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out lg:transition-none">
+        <%= render "admin/shared/sidebar" %>
+      </div>
+
+      <div class="flex-1 flex flex-col min-w-0">
+        <header class="border-b border-white/5 px-4 md:px-8 py-4 md:py-5 flex items-center justify-between sticky top-0 bg-blaze-ink/80 backdrop-blur z-30 gap-3">
+          <!-- Mobile hamburger -->
+          <button type="button"
+                  class="lg:hidden w-10 h-10 rounded-full border border-white/10 grid place-items-center text-white/80 hover:text-white hover:border-blaze-red/40 transition shrink-0"
+                  data-action="click->drawer#toggle"
+                  aria-label="Open menu">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M3 6h18M3 12h18M3 18h18"/>
+            </svg>
+          </button>
+
+          <div class="flex-1 min-w-0">
+            <h1 class="font-display text-xl md:text-2xl font-bold truncate"><%= content_for?(:page_title) ? content_for(:page_title) : "Dashboard" %></h1>
+            <p class="text-[10px] md:text-xs uppercase tracking-widest text-white/40 mt-0.5 md:mt-1 truncate"><%= content_for?(:page_subtitle) ? content_for(:page_subtitle) : Time.current.strftime("%A, %b %d") %></p>
           </div>
-          <div class="flex items-center gap-4">
-            <%= link_to "View site →", root_path, class: "text-sm text-white/60 hover:text-white transition" %>
+          <div class="flex items-center gap-3 md:gap-4 shrink-0">
+            <%= link_to "View site →", root_path, class: "hidden md:inline text-sm text-white/60 hover:text-white transition" %>
             <div class="w-9 h-9 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-bold"><%= current_user.email.first.upcase %></div>
           </div>
         </header>
 
         <%= render "shared/flash" %>
 
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden">
           <%= yield %>
         </main>
       </div>

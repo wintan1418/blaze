@@ -775,6 +775,28 @@ specials_data.each do |data|
 end
 puts "  ✓ Seeded specials: #{Special.count} (#{Special.where.not(image_url: nil).count} with images)"
 
+# ------------------------------------------------------------ Loyalty stamp backfill
+# Idempotent — find_or_create_by on (user, source, category) dedupes, so
+# re-running on every deploy is safe.
+if defined?(LoyaltyStamp)
+  stamps_created = 0
+  Booking.paid.includes(:user, :bookable).find_each do |b|
+    next unless b.user && b.loyalty_category
+    stamp = LoyaltyStamp.find_or_create_by!(user: b.user, source: b, category: b.loyalty_category) do |s|
+      s.earned_at = b.paid_at || b.created_at
+    end
+    stamps_created += 1 if stamp.previously_new_record?
+  end
+  Order.paid.includes(:user).find_each do |o|
+    next unless o.user
+    stamp = LoyaltyStamp.find_or_create_by!(user: o.user, source: o, category: "food") do |s|
+      s.earned_at = o.paid_at || o.created_at
+    end
+    stamps_created += 1 if stamp.previously_new_record?
+  end
+  puts "  ✓ Loyalty stamps: #{LoyaltyStamp.count} (+#{stamps_created} new)"
+end
+
 # ------------------------------------------------------------ Summary
 puts "─" * 60
 puts "🔥 BLAZE CAFE — seed complete"

@@ -1,16 +1,18 @@
-<header class="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl bg-blaze-ink/70 border-b border-white/5"
-        data-controller="nav">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
-    <%= link_to root_path, class: "flex items-center gap-2 group" do %>
+<header class="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl bg-blaze-ink/75 border-b border-white/5"
+        data-controller="nav drawer">
+  <div class="max-w-7xl mx-auto px-5 md:px-6 lg:px-10 h-16 md:h-20 flex items-center justify-between gap-3">
+    <!-- Logo -->
+    <%= link_to root_path, class: "flex items-center gap-2 group shrink-0" do %>
       <% if site_setting.logo_image.attached? %>
         <%= image_tag site_setting.logo_image, class: "w-9 h-9 rounded-full object-cover" %>
       <% else %>
         <span class="w-9 h-9 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-display font-bold text-white text-lg shadow-lg shadow-blaze-red/30 group-hover:scale-110 transition"><%= site_setting.logo_mark %></span>
       <% end %>
-      <span class="font-display font-bold text-xl tracking-tight"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span></span>
+      <span class="font-display font-bold text-lg md:text-xl tracking-tight"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span></span>
     <% end %>
 
-    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-white/70">
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium text-white/70">
       <%= link_to "Menu", menu_items_path, class: "hover:text-white transition" %>
       <%= link_to "Gaming", gaming_slots_path, class: "hover:text-white transition" %>
       <%= link_to "Cinema", screenings_path, class: "hover:text-white transition" %>
@@ -22,7 +24,8 @@
       <%= link_to "About", about_path, class: "hover:text-white transition" %>
     </nav>
 
-    <div class="flex items-center gap-3">
+    <!-- Right cluster -->
+    <div class="flex items-center gap-2 md:gap-3">
       <% cart_count = Cart.new(session).total_items %>
       <%= link_to cart_path, class: "relative w-10 h-10 rounded-full border border-white/10 grid place-items-center text-white/70 hover:text-white hover:border-blaze-red/40 transition" do %>
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -30,27 +33,116 @@
           <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
         </svg>
         <% if cart_count > 0 %>
-          <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blaze-red text-white text-[10px] font-bold grid place-items-center"><%= cart_count %></span>
+          <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-blaze-red text-white text-[10px] font-bold grid place-items-center"><%= cart_count %></span>
+        <% end %>
+      <% end %>
+
+      <!-- Desktop auth cluster -->
+      <div class="hidden md:flex items-center gap-3">
+        <% if user_signed_in? %>
+          <%= link_to "Orders", orders_path, class: "text-sm text-white/70 hover:text-white transition" %>
+          <%= link_to "Bookings", bookings_path, class: "text-sm text-white/70 hover:text-white transition" %>
+          <% if current_user.staff_or_admin? %>
+            <%= link_to "Staff", staff_root_path, class: "text-sm text-emerald-300 hover:text-white transition" %>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin", admin_root_path, class: "text-sm text-blaze-amber hover:text-white transition" %>
+          <% end %>
+          <%= button_to "Sign out", destroy_user_session_path, method: :delete,
+                class: "text-sm text-white/60 hover:text-white transition",
+                form: { data: { turbo: false } } %>
+        <% else %>
+          <%= link_to "Sign in", new_user_session_path, class: "text-sm text-white/70 hover:text-white transition" %>
+          <%= link_to "Book", gaming_slots_path, class: "btn-primary !py-2 !px-5 text-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button type="button"
+              class="md:hidden w-10 h-10 rounded-full border border-white/10 grid place-items-center text-white/80 hover:text-white hover:border-blaze-red/40 transition"
+              data-action="click->drawer#toggle"
+              aria-label="Open menu">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile drawer backdrop -->
+  <div data-drawer-target="backdrop"
+       data-action="click->drawer#close"
+       class="md:hidden hidden fixed inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300 z-40"></div>
+
+  <!-- Mobile drawer panel -->
+  <div data-drawer-target="panel"
+       data-drawer-closed-class="translate-x-full pointer-events-none"
+       class="md:hidden fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-blaze-ink border-l border-white/10 translate-x-full transition-transform duration-300 ease-out z-50 flex flex-col pointer-events-none">
+    <!-- Panel header -->
+    <div class="flex items-center justify-between px-5 h-16 border-b border-white/5">
+      <span class="font-display font-bold tracking-tight"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span></span>
+      <button type="button"
+              data-action="click->drawer#close"
+              class="w-10 h-10 rounded-full border border-white/10 grid place-items-center text-white/80 hover:text-white hover:border-blaze-red/40 transition"
+              aria-label="Close menu">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Panel links -->
+    <nav class="flex-1 overflow-y-auto py-5">
+      <% mobile_nav = [
+        [ "Menu",       menu_items_path,    "◈" ],
+        [ "Gaming",     gaming_slots_path,  "▲" ],
+        [ "Cinema",     screenings_path,    "●" ],
+        [ "Specials",   specials_path,      "★", true ],
+        [ "Locations",  locations_path,     "◇" ],
+        [ "About",      about_path,         "✦" ],
+        [ "Contact",    contact_path,       "✉" ]
+      ] %>
+      <% mobile_nav.each do |(label, path, icon, pulse)| %>
+        <%= link_to path, class: "flex items-center gap-4 px-6 py-4 text-lg font-display font-bold text-white/80 hover:text-white hover:bg-white/5 transition" do %>
+          <span class="w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-blaze-amber text-sm"><%= icon %></span>
+          <span><%= label %></span>
+          <% if pulse %>
+            <span class="w-1.5 h-1.5 rounded-full bg-blaze-red animate-pulse ml-auto"></span>
+          <% end %>
         <% end %>
       <% end %>
 
       <% if user_signed_in? %>
-        <%= link_to "Orders", orders_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
-        <%= link_to "Bookings", bookings_path, class: "hidden sm:inline text-sm text-white/70 hover:text-white transition" %>
-        <% if current_user.staff_or_admin? %>
-          <%= link_to "Staff", staff_root_path, class: "hidden sm:inline text-sm text-emerald-300 hover:text-white transition" %>
+        <div class="mt-4 pt-4 border-t border-white/5">
+          <p class="px-6 label-blaze mb-2">Your account</p>
+          <%= link_to "My orders",   orders_path,   class: "block px-6 py-3 text-white/70 hover:text-white hover:bg-white/5 transition" %>
+          <%= link_to "My bookings", bookings_path, class: "block px-6 py-3 text-white/70 hover:text-white hover:bg-white/5 transition" %>
+          <% if current_user.staff_or_admin? %>
+            <%= link_to "Staff floor", staff_root_path, class: "block px-6 py-3 text-emerald-300 hover:text-white hover:bg-white/5 transition" %>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin dashboard", admin_root_path, class: "block px-6 py-3 text-blaze-amber hover:text-white hover:bg-white/5 transition" %>
+          <% end %>
+        </div>
+      <% end %>
+    </nav>
+
+    <!-- Panel footer CTA -->
+    <div class="p-5 border-t border-white/5">
+      <% if user_signed_in? %>
+        <div class="text-xs text-white/50 mb-3">Signed in as <span class="text-white/80"><%= current_user.email %></span></div>
+        <%= button_to destroy_user_session_path, method: :delete,
+              class: "btn-ghost w-full text-sm",
+              form: { data: { turbo: false } } do %>
+          Sign out
         <% end %>
-        <% if current_user.admin? %>
-          <%= link_to "Admin", admin_root_path, class: "hidden sm:inline text-sm text-blaze-amber hover:text-white transition" %>
-        <% end %>
-        <%= button_to "Sign out", destroy_user_session_path, method: :delete,
-              class: "text-sm text-white/60 hover:text-white transition",
-              form: { data: { turbo: false } } %>
       <% else %>
-        <%= link_to "Sign in", new_user_session_path, class: "text-sm text-white/70 hover:text-white transition" %>
-        <%= link_to "Book now", gaming_slots_path, class: "btn-primary text-sm" %>
+        <div class="flex flex-col gap-2">
+          <%= link_to "Sign in", new_user_session_path, class: "btn-ghost text-sm w-full" %>
+          <%= link_to "Create account", new_user_registration_path, class: "btn-primary text-sm w-full" %>
+        </div>
       <% end %>
     </div>
   </div>
 </header>
-<div class="h-20"></div>
+<div class="h-16 md:h-20"></div>

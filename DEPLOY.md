@@ -1,85 +1,49 @@
 # 🔥 Blaze Cafe — Deployment Guide (Hatchbox / Hetzner)
 
-## The DB connection error you're hitting
+## How production database config now works
 
-```
-PG::ConnectionBad: ... FATAL: Peer authentication failed for user "blaze_cafe"
-```
+`config/database.yml` reads **`ENV["DATABASE_URL"]`** for production and lets
+Hatchbox control the credentials. You don't need to set a separate password
+env var — Hatchbox already put the full URL in `DATABASE_URL` when it
+provisioned the Postgres database for this app.
 
-**What it means:** Rails tried to connect to PostgreSQL over a Unix socket
-(no `host` specified). Postgres's default socket rule is `peer` auth, which
-requires the OS username to match the DB username. Your app runs as `deploy`
-but tries to connect as `blaze_cafe` → peer auth fails.
-
-**Fix (already applied in this commit):** `config/database.yml` now forces
-the production primary to connect over TCP to `localhost` by default, which
-bypasses peer auth and uses md5/scram password auth instead.
+Solid Cache, Solid Queue and Solid Cable all **share the primary database**
+(tables live alongside the app tables). Rails creates `solid_cache_entries`,
+`solid_queue_*`, `solid_cable_messages` etc on `db:migrate`.
 
 ## Required environment variables on the server
 
-Set these in the **Hatchbox → App → Environment** tab:
+Set these in **Hatchbox → App → Environment**. Do NOT paste `DATABASE_URL` —
+Hatchbox already sets that.
 
-| Variable                          | Example / value                          | Required |
-|-----------------------------------|------------------------------------------|----------|
-| `RAILS_MASTER_KEY`                | contents of `config/master.key`          | ✅ |
-| `BLAZE_CAFE_DATABASE_PASSWORD`    | the postgres password for `blaze_cafe` user | ✅ |
-| `DB_HOST`                         | `localhost` (default) or external DB host | optional |
-| `DB_PORT`                         | `5432` (default)                         | optional |
-| `PAYSTACK_SECRET_KEY`             | `sk_live_xxx` when going live            | ✅ |
-| `PAYSTACK_PUBLIC_KEY`             | `pk_live_xxx`                             | ✅ |
-| `TERMII_API_KEY`                  | your Termii key                          | ✅ |
-| `TERMII_SENDER_ID`                | e.g. `BLAZE` (max 11 chars, must be approved) | ✅ |
-| `TERMII_LIVE`                     | `true`                                   | ✅ |
-| `SMTP_*`                          | SMTP credentials for Devise emails       | optional |
-| `CLOUDINARY_URL`                  | if you switch ActiveStorage to Cloudinary | optional |
+| Variable                | Example / value                          | Required |
+|-------------------------|------------------------------------------|----------|
+| `RAILS_MASTER_KEY`      | contents of `config/master.key`          | ✅ |
+| `PAYSTACK_SECRET_KEY`   | `sk_test_xxx` (or `sk_live_xxx` when live) | ✅ |
+| `PAYSTACK_PUBLIC_KEY`   | `pk_test_xxx`                             | ✅ |
+| `TERMII_API_KEY`        | your Termii key                          | ✅ |
+| `TERMII_SENDER_ID`      | e.g. `BLAZE` (must be approved)          | ✅ |
+| `TERMII_LIVE`           | `true`                                   | ✅ |
+| `SMTP_*`                | SMTP credentials for Devise emails       | optional |
+| `CLOUDINARY_URL`        | if you switch ActiveStorage to Cloudinary | optional |
 
-## One-time database setup on the server
+## Post-build / post-deploy hook (Hatchbox)
 
-Run these **on the Hetzner box** as root or via `sudo -u postgres psql`:
+Add this to **App → Settings → Deploy Hooks** (or the equivalent):
 
 ```bash
-sudo -u postgres psql <<'SQL'
-CREATE USER blaze_cafe WITH PASSWORD 'REPLACE_WITH_STRONG_PASSWORD';
-CREATE DATABASE blaze_cafe_production OWNER blaze_cafe;
-CREATE DATABASE blaze_cafe_production_cache OWNER blaze_cafe;
-CREATE DATABASE blaze_cafe_production_queue OWNER blaze_cafe;
-CREATE DATABASE blaze_cafe_production_cable OWNER blaze_cafe;
-ALTER USER blaze_cafe CREATEDB;
-SQL
+bundle exec rails db:prepare
+bundle exec rails db:seed
 ```
 
-Then set `BLAZE_CAFE_DATABASE_PASSWORD` to the password you used above.
+- `db:prepare` creates the database if it doesn't exist, loads the schema,
+  and runs any pending migrations. It's idempotent.
+- `db:seed` is also idempotent — everything uses `find_or_create_by` /
+  `find_or_initialize_by` so re-running is safe. Images are attached once
+  (first run) and skipped on subsequent runs.
 
-## If you still see peer auth errors after the above
-
-Open `/etc/postgresql/16/main/pg_hba.conf` and make sure the `host` rules
-for `127.0.0.1/32` and `::1/128` use `md5` or `scram-sha-256` (not `peer`):
-
-```
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-local   all             all                                     peer
-host    all             all             127.0.0.1/32            scram-sha-256
-host    all             all             ::1/128                 scram-sha-256
-```
-
-Then reload: `sudo systemctl reload postgresql`
-
-## First deploy checklist
-
-1. ✅ Set all required env vars above in Hatchbox
-2. ✅ Create the Postgres user + 4 databases (commands above)
-3. ✅ Point DNS for `blazecafe.ng` (or your domain) at the Hetzner box
-4. ✅ In Hatchbox → SSL, enable Let's Encrypt
-5. ✅ Trigger deploy
-6. After successful first deploy, SSH in and run:
-
-   ```bash
-   cd /home/deploy/Blaze-cafe/current
-   RAILS_ENV=production bundle exec rails db:seed
-   ```
-
-7. Sign in at `https://yourdomain/users/sign_in`:
-   - `admin@blazecafe.ng` / `blazeadmin123` (change this immediately)
+If you DON'T want seeds re-running on every deploy, just use `db:prepare`
+alone — it only seeds on first-time database creation.
 
 ## Paystack webhook
 
@@ -89,17 +53,38 @@ In Paystack dashboard → API Keys & Webhooks, set the webhook URL to:
 https://yourdomain/payments/webhook
 ```
 
-Paystack will POST `charge.success` events there; the `PaymentsController#webhook`
+Paystack will POST `charge.success` events there; `PaymentsController#webhook`
 verifies the HMAC signature and finalizes payments asynchronously.
 
 ## Termii SMS
 
-- Your Termii sender ID must be **approved** (pending senders won't deliver)
-- Test SMS are free during development, production sends use credits
-- `TERMII_LIVE=true` makes the app hit the real API. Set `false` for staging
-  to log but not send.
+- Your Termii sender ID must be **approved** before production sends work
+- `TERMII_LIVE=true` makes the app hit the real API
+- Set `TERMII_LIVE=false` for staging — the app will log messages but skip
+  real delivery
 
 ## Rollback
 
-On Hatchbox: the Deploys tab has a "Rollback" button that reverts to the
+On Hatchbox, the Deploys tab has a "Rollback" button that reverts to the
 previous release without touching the database.
+
+## Troubleshooting
+
+### `PG::ConnectionBad: Peer authentication failed`
+You're hitting Postgres over a Unix socket. `DATABASE_URL` must point to
+a TCP host (Hatchbox does this by default). If you forked database.yml,
+make sure the production block uses `url: <%= ENV["DATABASE_URL"] %>`.
+
+### `fe_sendauth: no password supplied`
+Your database.yml is overriding Hatchbox's URL with an explicit username
+and an empty password env var. Remove hardcoded `username:` / `password:`
+lines from the production block — let `DATABASE_URL` carry them.
+
+### `PG::UndefinedTable: solid_cache_entries does not exist`
+Run `bundle exec rails db:migrate` on the server. The Solid Cache/Queue/
+Cable tables get created by their respective `migrations_paths`.
+
+### Images on the dashboard are broken
+Your seeds download imagery from Unsplash on first run. If Unsplash is
+unreachable or times out, those attachments get skipped. Just re-run
+`rails db:seed` and they'll fill in on the second attempt (idempotent).
