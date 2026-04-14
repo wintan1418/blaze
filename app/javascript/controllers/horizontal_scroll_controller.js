@@ -61,20 +61,28 @@ export default class extends Controller {
   enableAutoScroll() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
-    // Duplicate children once so scrollLeft can loop seamlessly.
-    this.reel.insertAdjacentHTML("beforeend", this.reel.innerHTML)
-    this.halfWidth = this.reel.scrollWidth / 2
+    // scroll-snap + smooth scroll-behavior fight with per-frame scrollLeft
+    // nudges, so disable them on this reel while auto-scroll is running.
+    this.reel.style.scrollSnapType = "none"
+    this.reel.style.scrollBehavior = "auto"
 
-    const tick = () => {
-      if (!this.isDown && !this.isHovered) {
-        this.reel.scrollLeft += this.speedValue
-        if (this.reel.scrollLeft >= this.halfWidth) {
-          this.reel.scrollLeft -= this.halfWidth
+    // Duplicate children once so scrollLeft can loop seamlessly. Wait a tick
+    // for layout so scrollWidth is accurate.
+    requestAnimationFrame(() => {
+      this.reel.insertAdjacentHTML("beforeend", this.reel.innerHTML)
+      this.halfWidth = this.reel.scrollWidth / 2
+
+      const tick = () => {
+        if (!this.isDown && !this.isHovered) {
+          this.reel.scrollLeft += this.speedValue
+          if (this.reel.scrollLeft >= this.halfWidth) {
+            this.reel.scrollLeft -= this.halfWidth
+          }
         }
+        this.rafId = requestAnimationFrame(tick)
       }
       this.rafId = requestAnimationFrame(tick)
-    }
-    this.rafId = requestAnimationFrame(tick)
+    })
   }
 
   onEnter() { this.isHovered = true }
