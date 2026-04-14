@@ -56,10 +56,10 @@ class Order < ApplicationRecord
 
   def advance_status!
     next_status = case status
-                  when "pending"   then "preparing"
-                  when "preparing" then "ready"
-                  when "ready"     then "completed"
-                  end
+    when "pending"   then "preparing"
+    when "preparing" then "ready"
+    when "ready"     then "completed"
+    end
     return unless next_status
 
     update!(status: next_status)

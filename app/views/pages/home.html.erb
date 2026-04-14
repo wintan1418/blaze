@@ -25,10 +25,13 @@
     <% end %>
   </div>
 
-  <!-- OVERLAY -->
-  <div class="absolute inset-0 bg-linear-to-t from-blaze-ink via-blaze-ink/75 to-blaze-ink/20 md:hidden"></div>
-  <div class="absolute inset-0 hidden md:block bg-linear-to-r from-blaze-ink via-blaze-ink/90 via-30% to-transparent"></div>
-  <div class="absolute inset-0 hidden md:block bg-linear-to-b from-blaze-ink/20 via-transparent to-blaze-ink/40"></div>
+  <!-- OVERLAY — stacked layers for absolute readability on ANY slide -->
+  <!-- Mobile: flat dark base + stronger bottom-up gradient -->
+  <div class="absolute inset-0 bg-blaze-ink/55 md:hidden"></div>
+  <div class="absolute inset-0 bg-linear-to-t from-blaze-ink via-blaze-ink/85 to-blaze-ink/50 md:hidden"></div>
+  <!-- Desktop: dark wash behind the left content column -->
+  <div class="absolute inset-0 hidden md:block bg-linear-to-r from-blaze-ink via-blaze-ink/92 via-35% to-transparent"></div>
+  <div class="absolute inset-0 hidden md:block bg-linear-to-b from-blaze-ink/25 via-transparent to-blaze-ink/45"></div>
 
   <!-- CONTENT LAYER -->
   <div class="relative z-10 h-full min-h-[100svh] md:min-h-[760px]">
@@ -36,12 +39,13 @@
       <div class="col-span-12 md:col-span-6 lg:col-span-5 flex flex-col justify-between px-6 md:px-10 lg:px-16 py-10 md:py-14">
 
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.32em] text-white/50">
-            <span class="w-8 h-px bg-white/30"></span>
+          <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.32em] text-white/70"
+               style="text-shadow: 0 1px 6px rgba(10,10,11,0.8);">
+            <span class="w-8 h-px bg-white/40"></span>
             <span><%= site_setting.hero_eyebrow %></span>
           </div>
           <% if site_setting.hero_live_label.present? %>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur text-[11px] uppercase tracking-[0.2em] text-white/70">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur text-[11px] uppercase tracking-[0.2em] text-white">
               <span class="relative flex h-1.5 w-1.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blaze-red opacity-75"></span>
                 <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-blaze-red"></span>
@@ -52,13 +56,17 @@
         </div>
 
         <div class="py-14 md:py-0">
-          <h1 class="font-display font-black leading-[0.88] tracking-[-0.035em] text-[18vw] sm:text-[15vw] md:text-[9vw] lg:text-[7.5vw] xl:text-[7rem]">
+          <h1 class="font-display font-black leading-[0.88] tracking-[-0.035em] text-[16vw] sm:text-[13vw] md:text-[9vw] lg:text-[7.5vw] xl:text-[7rem] text-white"
+              style="text-shadow: 0 2px 30px rgba(0,0,0,0.6), 0 4px 60px rgba(10,10,11,0.5), 0 1px 2px rgba(10,10,11,0.8);">
             <%= site_setting.hero_headline_line1 %><br>
             <%= site_setting.hero_headline_line2_html %><span class="text-blaze-red">.</span>
           </h1>
 
           <% if site_setting.hero_subtitle.present? %>
-            <p class="mt-8 text-base md:text-lg text-white/65 max-w-md leading-relaxed"><%= site_setting.hero_subtitle %></p>
+            <p class="mt-6 md:mt-8 text-base md:text-lg text-white/85 max-w-md leading-relaxed"
+               style="text-shadow: 0 1px 8px rgba(10,10,11,0.7), 0 1px 2px rgba(10,10,11,0.9);">
+              <%= site_setting.hero_subtitle %>
+            </p>
           <% end %>
 
           <div class="mt-10 flex flex-wrap gap-3">
@@ -71,7 +79,8 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[11px] uppercase tracking-[0.32em] text-white/40">
+        <div class="flex items-center justify-between text-[11px] uppercase tracking-[0.32em] text-white/60"
+             style="text-shadow: 0 1px 6px rgba(10,10,11,0.8);">
           <div class="flex items-center gap-2">
             <svg class="w-3.5 h-3.5 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
             <span>Scroll</span>

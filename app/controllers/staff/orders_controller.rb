@@ -6,11 +6,11 @@ module Staff
       scope = Order.includes(:user, :location, :order_items).order(:created_at)
       status_filter = params[:status].presence || "active"
       scope = case status_filter
-              when "active"    then scope.where(status: %w[pending preparing ready])
-              when "completed" then scope.where(status: "completed")
-              when "cancelled" then scope.where(status: "cancelled")
-              else scope
-              end
+      when "active"    then scope.where(status: %w[pending preparing ready])
+      when "completed" then scope.where(status: "completed")
+      when "cancelled" then scope.where(status: "cancelled")
+      else scope
+      end
       @orders = scope.limit(100)
       @status_filter = status_filter
     end

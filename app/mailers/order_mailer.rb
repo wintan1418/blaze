@@ -5,7 +5,7 @@ class OrderMailer < ApplicationMailer
     order_received:        "Blaze Cafe — we got your order (%{ref})",
     order_paid:            "Blaze Cafe — payment confirmed (%{ref})",
     order_ready:           "Blaze Cafe — your order is ready (%{ref})",
-    order_out_for_delivery:"Blaze Cafe — your delivery is on the way (%{ref})",
+    order_out_for_delivery: "Blaze Cafe — your delivery is on the way (%{ref})",
     order_delivered:       "Blaze Cafe — order delivered (%{ref})"
   }.freeze
 

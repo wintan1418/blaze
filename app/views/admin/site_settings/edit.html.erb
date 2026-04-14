@@ -41,7 +41,8 @@
         </div>
       <% end %>
 
-      <%= render "tab_#{@tab}", f: f %>
+      <% allowed_tab = %w[brand content sections].include?(@tab) ? @tab : "brand" %>
+      <%= render "tab_#{allowed_tab}", f: f %>
 
       <div class="card p-5 flex items-center justify-between">
         <p class="text-sm text-white/50">Changes apply immediately after saving.</p>

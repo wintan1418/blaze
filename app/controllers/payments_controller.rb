@@ -96,4 +96,3 @@ class PaymentsController < ApplicationController
     payment.mark_failed!(reason: e.message)
   end
 end
-

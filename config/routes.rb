@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   end
 
   # Cart + food orders
-  resource  :cart, only: [ :show, :destroy ] do
+  resource :cart, only: [ :show, :destroy ] do
     post   :add,    to: "carts#add",    as: :add
     patch  :update, to: "carts#update", as: :update
     delete "remove/:menu_item_id", to: "carts#remove", as: :remove

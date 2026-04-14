@@ -39,13 +39,13 @@ module ApplicationHelper
     # Page series
     pagy.series.each do |item|
       parts << case item
-               when Integer
+      when Integer
                  link_to(item, pagy_url_for(pagy, item), class: link_cls, aria: { label: "Page #{item}" })
-               when String
+      when String
                  content_tag(:span, item, class: active_cls, aria: { current: "page" })
-               when :gap
+      when :gap
                  content_tag(:span, "…", class: gap_cls)
-               end
+      end
     end
 
     # Next
