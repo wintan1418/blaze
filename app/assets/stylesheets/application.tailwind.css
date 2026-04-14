@@ -230,6 +230,79 @@
     animation: slide-up-fade 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
+  /* Animated fire-mesh gradient for ambient hero depth */
+  @keyframes fire-mesh-drift {
+    0%   { transform: translate(-5%, -5%) scale(1.1); }
+    50%  { transform: translate(5%, 5%) scale(1.3); }
+    100% { transform: translate(-5%, -5%) scale(1.1); }
+  }
+  .fire-mesh {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(ellipse 40% 50% at 25% 30%, rgba(232, 52, 26, 0.35), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 75% 20%, rgba(255, 90, 31, 0.25), transparent 65%),
+      radial-gradient(ellipse 60% 50% at 50% 80%, rgba(245, 166, 35, 0.2), transparent 60%),
+      radial-gradient(ellipse 35% 40% at 80% 70%, rgba(232, 52, 26, 0.2), transparent 65%);
+    filter: blur(60px);
+    animation: fire-mesh-drift 20s ease-in-out infinite;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  /* Image marquee */
+  .image-marquee {
+    display: flex;
+    overflow: hidden;
+    gap: 1.25rem;
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  }
+  .image-marquee__track {
+    display: flex;
+    gap: 1.25rem;
+    flex-shrink: 0;
+    animation: blaze-marquee 55s linear infinite;
+  }
+  .image-marquee:hover .image-marquee__track {
+    animation-play-state: paused;
+  }
+
+  /* Horizontal snap scroll for film reel */
+  .snap-reel {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .snap-reel::-webkit-scrollbar { display: none; }
+  .snap-reel > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+
+  /* Fire-underline for linked headlines */
+  .fire-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .fire-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.15em;
+    height: 0.08em;
+    width: 100%;
+    background: linear-gradient(90deg, #E8341A, #FF5A1F, #F5A623);
+    border-radius: 999px;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .fire-underline::after,
+  .fire-underline:hover::after {
+    transform: scaleX(1);
+  }
+
   .marquee {
     display: flex;
     overflow: hidden;
@@ -259,6 +332,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .marquee__track,
+    .image-marquee__track,
+    .fire-mesh,
     .reveal {
       animation: none !important;
       transition: none !important;

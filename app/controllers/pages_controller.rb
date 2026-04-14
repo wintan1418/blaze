@@ -7,6 +7,7 @@ class PagesController < ApplicationController
     @menu_strip = MenuItem.available.includes(:menu_category).limit(20)
     @hero_slides = HeroSlide.active.ordered
     @live_specials = Special.live_now.ordered.limit(4)
+    @cinema_reel = Screening.upcoming.available.includes(:screen).limit(10)
   end
 
   def about; end

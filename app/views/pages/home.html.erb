@@ -2,6 +2,8 @@
 
 <!-- ═════════════════════════ HERO (editorial split) ═════════════════════════ -->
 <section class="relative bg-blaze-ink overflow-hidden min-h-[100svh] md:h-screen md:min-h-[760px]">
+  <!-- Animated fire-mesh ambient layer (sits above the image, below content) -->
+  <div class="fire-mesh"></div>
 
   <!-- IMAGE LAYER -->
   <div class="absolute inset-0 md:left-[42%] overflow-hidden"
@@ -57,7 +59,9 @@
 
         <div class="py-14 md:py-0">
           <h1 class="font-display font-black leading-[0.88] tracking-[-0.035em] text-[16vw] sm:text-[13vw] md:text-[9vw] lg:text-[7.5vw] xl:text-[7rem] text-white"
-              style="text-shadow: 0 2px 30px rgba(0,0,0,0.6), 0 4px 60px rgba(10,10,11,0.5), 0 1px 2px rgba(10,10,11,0.8);">
+              style="text-shadow: 0 2px 30px rgba(0,0,0,0.6), 0 4px 60px rgba(10,10,11,0.5), 0 1px 2px rgba(10,10,11,0.8);"
+              data-controller="text-reveal"
+              data-text-reveal-stagger-value="80">
             <%= site_setting.hero_headline_line1 %><br>
             <%= site_setting.hero_headline_line2_html %><span class="text-blaze-red">.</span>
           </h1>
@@ -198,18 +202,29 @@
   </section>
 <% end %>
 
-<!-- ═════════════════════════ MENU MARQUEE ═════════════════════════ -->
+<!-- ═════════════════════════ MENU IMAGE MARQUEE ═════════════════════════ -->
 <% if site_setting.section_enabled?(:menu_marquee) && @menu_strip.any? %>
-  <section class="py-8 border-y border-white/5 bg-blaze-ash/60 overflow-hidden">
-    <div class="marquee">
+  <% marquee_items = @menu_strip.select { |i| i.image.attached? }.first(12) %>
+  <% marquee_items = @menu_strip.first(12) if marquee_items.empty? %>
+  <section class="py-10 md:py-14 border-y border-white/5 bg-linear-to-b from-blaze-ash/80 via-blaze-ink to-blaze-ash/80 overflow-hidden">
+    <div class="image-marquee">
       <% 2.times do %>
-        <div class="marquee__track">
-          <% @menu_strip.each do |item| %>
-            <div class="flex items-center gap-4 whitespace-nowrap text-2xl font-display font-semibold text-white/50">
-              <span class="text-blaze-red">◆</span>
-              <%= item.name %>
-              <span class="text-blaze-amber"><%= naira(item.price_kobo) %></span>
-            </div>
+        <div class="image-marquee__track">
+          <% marquee_items.each do |item| %>
+            <%= link_to menu_item_path(item), class: "group relative flex items-center gap-4 w-72 shrink-0 rounded-2xl bg-blaze-ash/60 border border-white/5 p-3 hover:border-blaze-red/40 transition" do %>
+              <div class="w-16 h-16 rounded-xl overflow-hidden bg-blaze-smoke shrink-0">
+                <% if item.image.attached? %>
+                  <%= image_tag item.image, class: "w-full h-full object-cover group-hover:scale-110 transition duration-700" %>
+                <% else %>
+                  <div class="w-full h-full grid place-items-center text-white/20 text-2xl"><%= site_setting.logo_mark %></div>
+                <% end %>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-[10px] uppercase tracking-[0.2em] text-blaze-amber"><%= item.menu_category.name %></p>
+                <p class="font-display font-bold text-white truncate group-hover:text-blaze-red transition"><%= item.name %></p>
+                <p class="font-display text-sm font-black fire-text"><%= naira(item.price_kobo) %></p>
+              </div>
+            <% end %>
           <% end %>
         </div>
       <% end %>
@@ -326,30 +341,46 @@
   </section>
 <% end %>
 
-<!-- ═════════════════════════ CINEMA STRIP ═════════════════════════ -->
-<% if site_setting.section_enabled?(:cinema_strip) && @upcoming_screenings.any? %>
-  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-24" data-controller="reveal">
-    <div class="flex items-end justify-between mb-12 reveal">
+<!-- ═════════════════════════ CINEMA REEL (horizontal scroll) ═════════════════════════ -->
+<% if site_setting.section_enabled?(:cinema_strip) && @cinema_reel&.any? %>
+  <section class="relative py-24 overflow-hidden" data-controller="reveal">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-end justify-between mb-10 flex-wrap gap-4 reveal">
       <div>
         <span class="chip bg-purple-500/10 text-purple-300">Cinema</span>
-        <h2 class="font-display text-4xl md:text-5xl font-bold mt-4">What's showing this week</h2>
+        <h2 class="font-display text-4xl md:text-6xl font-black mt-4 leading-[0.95]">
+          What's <span class="fire-text italic">showing</span>.
+        </h2>
+        <p class="text-sm text-white/50 mt-3">Drag to explore · curated every week</p>
       </div>
-      <%= link_to "All screenings →", screenings_path, class: "hidden md:inline text-white/60 hover:text-white transition" %>
+      <%= link_to screenings_path, class: "group inline-flex items-center gap-2 text-white/70 hover:text-white transition" do %>
+        <span class="fire-underline">All screenings</span>
+        <span class="transition-transform group-hover:translate-x-1">→</span>
+      <% end %>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <% @upcoming_screenings.each do |screening| %>
-        <%= link_to screening_path(screening), class: "card overflow-hidden hover:-translate-y-1 hover:border-blaze-red/40 transition reveal block group" do %>
-          <div class="aspect-[3/4] bg-linear-to-br from-purple-900/40 via-blaze-smoke to-blaze-ash overflow-hidden">
+
+    <!-- Horizontal reel -->
+    <div class="snap-reel flex gap-5 overflow-x-auto pb-6 pl-6 lg:pl-10 pr-6 lg:pr-10"
+         data-controller="horizontal-scroll">
+      <% @cinema_reel.each_with_index do |screening, i| %>
+        <%= link_to screening_path(screening), class: "group block w-[260px] md:w-[300px] shrink-0" do %>
+          <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-linear-to-br from-purple-900/40 via-blaze-smoke to-blaze-ash">
             <% if screening.poster.attached? %>
-              <%= image_tag screening.poster, class: "w-full h-full object-cover group-hover:scale-110 transition duration-700" %>
+              <%= image_tag screening.poster, class: "w-full h-full object-cover group-hover:scale-110 transition duration-[1200ms]" %>
             <% else %>
               <div class="w-full h-full grid place-items-center"><span class="font-display text-4xl font-bold text-white/10">●</span></div>
             <% end %>
-          </div>
-          <div class="p-5">
-            <p class="text-xs uppercase tracking-widest text-blaze-amber"><%= screening.starts_at.strftime("%a · %I:%M %p") %></p>
-            <h3 class="font-display text-lg font-bold mt-1 line-clamp-1"><%= screening.title %></h3>
-            <p class="text-sm text-white/50 mt-1"><%= naira(screening.price_kobo) %> · <%= screening.seats_remaining %> left</p>
+            <!-- Gradient overlay -->
+            <div class="absolute inset-0 bg-linear-to-t from-blaze-ink via-blaze-ink/20 to-transparent"></div>
+            <!-- Reel number -->
+            <span class="absolute top-4 left-4 font-display text-xs font-bold tracking-[0.3em] text-white/60 uppercase">#<%= format("%02d", i + 1) %></span>
+            <!-- Price chip -->
+            <span class="absolute top-4 right-4 chip bg-black/60 backdrop-blur text-blaze-amber border border-white/10"><%= naira(screening.price_kobo) %></span>
+            <!-- Title + time overlay -->
+            <div class="absolute bottom-0 left-0 right-0 p-5">
+              <p class="text-[10px] uppercase tracking-[0.25em] text-blaze-amber font-semibold"><%= screening.starts_at.strftime("%a · %I:%M %p") %></p>
+              <h3 class="font-display text-xl md:text-2xl font-black text-white mt-1 leading-tight drop-shadow-lg"><%= screening.title %></h3>
+              <p class="text-xs text-white/60 mt-1.5"><%= screening.seats_remaining %> seats left</p>
+            </div>
           </div>
         <% end %>
       <% end %>
@@ -357,16 +388,64 @@
   </section>
 <% end %>
 
-<!-- ═════════════════════════ TESTIMONIAL ═════════════════════════ -->
-<% if site_setting.section_enabled?(:testimonial) && site_setting.testimonial_quote.present? %>
-  <section class="max-w-5xl mx-auto px-6 lg:px-10 py-24 text-center">
-    <svg class="w-12 h-12 mx-auto text-blaze-red/60 mb-6" fill="currentColor" viewBox="0 0 32 32">
-      <path d="M10 8v8a6 6 0 01-6 6v4a10 10 0 0010-10V8zm18 0v8a6 6 0 01-6 6v4a10 10 0 0010-10V8z"/>
-    </svg>
-    <p class="font-display text-3xl md:text-4xl font-medium leading-[1.25] text-white/90">"<%= site_setting.testimonial_quote %>"</p>
-    <% if site_setting.testimonial_author.present? %>
-      <p class="mt-8 text-sm uppercase tracking-widest text-white/40">— <%= site_setting.testimonial_author %></p>
-    <% end %>
+<!-- ═════════════════════════ TESTIMONIAL CAROUSEL ═════════════════════════ -->
+<% if site_setting.section_enabled?(:testimonial) %>
+  <% testimonials = [
+    { quote: (site_setting.testimonial_quote.presence || "The jollof hits different. The PS5 is clean. The cinema room is bigger than my bedroom. Blaze is the move in Ondo, period."),
+      author: (site_setting.testimonial_author.presence || "Ada, regular since day one"),
+      role: "Student" },
+    { quote: "Got the squad together for gaming night and ended with shawarma at 11pm. This place hits every time.",
+      author: "Kunle A.",
+      role: "Software engineer" },
+    { quote: "Booked the private cinema for my girlfriend's birthday. Popcorn was fresh, the pair deal was a steal. Making this a monthly thing.",
+      author: "Tope O.",
+      role: "Creator" }
+  ] %>
+
+  <section class="relative max-w-5xl mx-auto px-6 lg:px-10 py-24 md:py-32 overflow-hidden">
+    <!-- Subtle ambient glow -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(232,52,26,0.10),transparent_55%)] pointer-events-none"></div>
+
+    <div class="relative text-center"
+         data-controller="testimonial-carousel"
+         data-testimonial-carousel-interval-value="7000">
+      <svg class="w-12 h-12 mx-auto text-blaze-red/70 mb-6" fill="currentColor" viewBox="0 0 32 32">
+        <path d="M10 8v8a6 6 0 01-6 6v4a10 10 0 0010-10V8zm18 0v8a6 6 0 01-6 6v4a10 10 0 0010-10V8z"/>
+      </svg>
+
+      <div class="relative min-h-[260px] md:min-h-[220px]">
+        <% testimonials.each_with_index do |t, i| %>
+          <div data-testimonial-carousel-target="slide"
+               class="absolute inset-0 transition-all duration-700 ease-out"
+               style="opacity: <%= i.zero? ? 1 : 0 %>; transform: translate3d(0, <%= i.zero? ? 0 : '1rem' %>, 0);">
+            <p class="font-display text-2xl md:text-4xl font-medium leading-[1.25] text-white max-w-3xl mx-auto">
+              &ldquo;<%= t[:quote] %>&rdquo;
+            </p>
+            <div class="mt-10 flex items-center justify-center gap-3">
+              <span class="w-10 h-10 rounded-full bg-linear-to-br from-blaze-red via-blaze-ember to-blaze-amber grid place-items-center font-display font-bold text-white">
+                <%= t[:author].first.upcase %>
+              </span>
+              <div class="text-left">
+                <p class="font-display font-bold text-white"><%= t[:author] %></p>
+                <p class="text-xs uppercase tracking-widest text-white/50"><%= t[:role] %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Dots -->
+      <div class="flex items-center justify-center gap-2 mt-8">
+        <% testimonials.each_with_index do |_, i| %>
+          <button type="button"
+                  data-testimonial-carousel-target="dot"
+                  data-action="click->testimonial-carousel#select"
+                  data-index="<%= i %>"
+                  class="h-2 rounded-full transition-all duration-500 <%= i.zero? ? 'bg-blaze-red w-8' : 'bg-white/20 w-2' %>"
+                  aria-label="Testimonial <%= i + 1 %>"></button>
+        <% end %>
+      </div>
+    </div>
   </section>
 <% end %>
 
