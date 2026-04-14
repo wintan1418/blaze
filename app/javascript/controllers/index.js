@@ -17,6 +17,7 @@ import DrawerController from "./drawer_controller"
 import TextRevealController from "./text_reveal_controller"
 import HorizontalScrollController from "./horizontal_scroll_controller"
 import TestimonialCarouselController from "./testimonial_carousel_controller"
+import ModalController from "./modal_controller"
 
 application.register("hello", HelloController)
 application.register("nav", NavController)
@@ -35,3 +36,4 @@ application.register("drawer", DrawerController)
 application.register("text-reveal", TextRevealController)
 application.register("horizontal-scroll", HorizontalScrollController)
 application.register("testimonial-carousel", TestimonialCarouselController)
+application.register("modal", ModalController)
