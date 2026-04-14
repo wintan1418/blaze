@@ -87,9 +87,18 @@ customer.save!
 puts "  ✓ Demo customer: #{customer.email}"
 
 extra_customers = [
-  { email: "ada@example.ng",    name: "Ada Nwosu",    phone: "+2348011110001" },
-  { email: "kunle@example.ng",  name: "Kunle Adebayo", phone: "+2348011110002" },
-  { email: "zainab@example.ng", name: "Zainab Musa",  phone: "+2348011110003" }
+  { email: "ada@example.ng",      name: "Ada Nwosu",         phone: "+2348011110001" },
+  { email: "kunle@example.ng",    name: "Kunle Adebayo",     phone: "+2348011110002" },
+  { email: "zainab@example.ng",   name: "Zainab Musa",       phone: "+2348011110003" },
+  { email: "tope@example.ng",     name: "Tope Ogunleye",     phone: "+2348011110004" },
+  { email: "ifeoma@example.ng",   name: "Ifeoma Eze",        phone: "+2348011110005" },
+  { email: "chidera@example.ng",  name: "Chidera Okafor",    phone: "+2348011110006" },
+  { email: "abdul@example.ng",    name: "Abdul Bello",       phone: "+2348011110007" },
+  { email: "damola@example.ng",   name: "Damola Adeleke",    phone: "+2348011110008" },
+  { email: "funke@example.ng",    name: "Funke Balogun",     phone: "+2348011110009" },
+  { email: "yusuf@example.ng",    name: "Yusuf Aliyu",       phone: "+2348011110010" },
+  { email: "blessing@example.ng", name: "Blessing Okonkwo",  phone: "+2348011110011" },
+  { email: "seun@example.ng",     name: "Seun Akinwale",     phone: "+2348011110012" }
 ]
 extra_customers.each do |data|
   u = User.find_or_initialize_by(email: data[:email])
@@ -416,6 +425,74 @@ menu_items = [
       foodish("dessert"),
       picsum("tiramisu")
     ]
+  },
+
+  # === PRODUCTION-GRADE ADDITIONS: more Nigerian + international variety ===
+  {
+    category: :food, name: "Egusi & Pounded Yam", price: 3800,
+    desc: "Rich egusi soup with ponmo, shaki and assorted meat, served with fresh pounded yam.",
+    prep: 22,
+    images: [ unsplash("1603133872878-684f208fb84b"), picsum("egusi-pounded-yam") ]
+  },
+  {
+    category: :food, name: "Amala & Ewedu", price: 2500,
+    desc: "Soft amala with smooth ewedu and spicy gbegiri. Served with your choice of meat.",
+    prep: 18,
+    images: [ unsplash("1592417817038-d13fd7342605"), picsum("amala-ewedu") ]
+  },
+  {
+    category: :food, name: "Yam & Egg Sauce", price: 2200,
+    desc: "Fried yam slices with a fiery egg-and-pepper sauce. Breakfast of champions.",
+    prep: 12,
+    images: [ unsplash("1604908176997-125f25cc6f3d"), picsum("yam-egg") ]
+  },
+  {
+    category: :food, name: "Chicken Noodles", price: 2600,
+    desc: "Stir-fried noodles with grilled chicken strips, carrots and pepper.",
+    prep: 14,
+    images: [ unsplash("1552611052-33e04de081de"), foodish("pasta"), picsum("chicken-noodles") ]
+  },
+  {
+    category: :food, name: "Moi Moi & Stew", price: 2000,
+    desc: "Steamed bean pudding with boiled egg, served with Nigerian pepper stew.",
+    prep: 15,
+    images: [ unsplash("1606787366850-de6330128bfc"), picsum("moi-moi") ]
+  },
+  {
+    category: :drinks, name: "Tigernut Milk (Kunu Aya)", price: 1400,
+    desc: "Creamy tigernut milk blended with dates and coconut. Dairy-free. Iced.",
+    images: [ unsplash("1572490122747-3968b75cc699"), picsum("kunu-aya") ]
+  },
+  {
+    category: :drinks, name: "Iced Zobo", price: 1100,
+    desc: "Hibiscus tea infused with pineapple, ginger and clove. Served very cold.",
+    images: [ unsplash("1534353473418-4cfa6c56fd38"), picsum("iced-zobo") ]
+  },
+  {
+    category: :drinks, name: "Palm Wine (fresh)", price: 1600,
+    desc: "Fresh, lightly fermented palm wine straight from the tapper. Available 6pm–10pm only.",
+    images: [ unsplash("1513558161293-cdaf765ed2fd"), picsum("palm-wine") ]
+  },
+  {
+    category: :snacks, name: "Meat Pie (2pc)", price: 1400,
+    desc: "Flaky shortcrust pastry stuffed with spiced minced beef and potato.",
+    images: [ unsplash("1565299543923-37dd37887442"), picsum("meat-pie") ]
+  },
+  {
+    category: :snacks, name: "Chin Chin Tub", price: 1000,
+    desc: "Crunchy sweet Nigerian chin chin. Great to share while waiting for your order.",
+    images: [ unsplash("1558961363-fa8fdf82db35"), picsum("chin-chin") ]
+  },
+  {
+    category: :snacks, name: "Akara & Pap", price: 1500,
+    desc: "Golden bean cake fritters with warm pap. Pure comfort.",
+    prep: 10,
+    images: [ unsplash("1598515214211-89d3c73ae83b"), picsum("akara-pap") ]
+  },
+  {
+    category: :desserts, name: "Coconut Ice Cream", price: 1500,
+    desc: "House-churned coconut ice cream, three scoops, toasted coconut flakes.",
+    images: [ unsplash("1488900128323-21503983a07e"), picsum("coconut-icecream") ]
   }
 ]
 
@@ -559,6 +636,42 @@ films = [
     poster_urls: [
       unsplash("1598899134739-24c46f58b8c0", w: 900, h: 1200),
       picsum("breath-of-life", w: 900, h: 1200)
+    ]
+  },
+  {
+    title: "A Tribe Called Judah",
+    synopsis: "A Nigerian matriarch and her five sons pull off the heist of a lifetime — for love and survival.",
+    price: 3500,
+    poster_urls: [
+      unsplash("1485846234645-a62644f84728", w: 900, h: 1200),
+      picsum("tribe-called-judah", w: 900, h: 1200)
+    ]
+  },
+  {
+    title: "Everybody Loves Jenifa",
+    synopsis: "The return of Funke Akindele's beloved Jenifa — now running an NGO and still chaotic as ever.",
+    price: 3000,
+    poster_urls: [
+      unsplash("1478720568477-152d9b164e26", w: 900, h: 1200),
+      picsum("everybody-jenifa", w: 900, h: 1200)
+    ]
+  },
+  {
+    title: "House of Ga'a",
+    synopsis: "The rise and fall of the most powerful prime minister in the Oyo Empire. Epic Yoruba historical drama.",
+    price: 4000,
+    poster_urls: [
+      unsplash("1440404653325-ab127d49abc1", w: 900, h: 1200),
+      picsum("house-of-gaa", w: 900, h: 1200)
+    ]
+  },
+  {
+    title: "Battle on Buka Street",
+    synopsis: "Two feuding Nigerian mothers run rival food joints on the same street. Comedy gold from Funke Akindele.",
+    price: 3000,
+    poster_urls: [
+      unsplash("1518929458119-e5bf444c30f4", w: 900, h: 1200),
+      picsum("buka-street", w: 900, h: 1200)
     ]
   }
 ]
