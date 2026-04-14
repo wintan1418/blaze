@@ -234,35 +234,132 @@
 
 <!-- ═════════════════════════ VIBE GALLERY ═════════════════════════ -->
 <% if site_setting.section_enabled?(:vibe_gallery) %>
-  <section class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24 md:py-32" data-controller="reveal">
-    <div class="grid md:grid-cols-12 gap-8 md:gap-12">
-      <div class="md:col-span-5 reveal">
-        <span class="chip bg-blaze-amber/10 text-blaze-amber"><%= site_setting.vibe_eyebrow %></span>
-        <h2 class="font-display text-4xl md:text-6xl font-black mt-4 leading-[0.95]"><%= site_setting.vibe_headline %></h2>
-        <p class="mt-6 text-white/60 text-lg max-w-md leading-relaxed"><%= site_setting.vibe_body %></p>
-        <div class="mt-8 flex gap-4">
-          <%= link_to "See the menu", menu_items_path, class: "btn-primary text-sm" %>
-          <%= link_to "Visit us", locations_path, class: "btn-ghost text-sm" %>
-        </div>
+  <section class="relative py-24 md:py-40 overflow-hidden" data-controller="reveal">
+    <!-- Ambient background effects -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(232,52,26,0.08),transparent_60%)] pointer-events-none"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(245,166,35,0.05),transparent_55%)] pointer-events-none"></div>
+
+    <!-- Enormous ghost word floating behind the headline -->
+    <div class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
+      <span class="font-display font-black tracking-[-0.04em] text-[28vw] md:text-[18vw] leading-none text-white/[0.025]">VIBES</span>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10">
+      <!-- Vertical chapter marker (desktop only) -->
+      <div class="hidden lg:flex absolute top-0 left-10 flex-col items-center gap-4 text-white/40">
+        <div class="w-px h-20 bg-linear-to-b from-transparent via-blaze-red to-transparent"></div>
+        <span class="font-display text-[10px] tracking-[0.4em] uppercase rotate-90 origin-center whitespace-nowrap translate-y-10">Vol. 01 · Vibes</span>
       </div>
 
-      <div class="md:col-span-7 grid grid-cols-3 gap-3 md:gap-4 h-[560px]">
-        <% urls = vibe_gallery_urls(5) %>
-        <div class="row-span-2 overflow-hidden rounded-3xl reveal">
-          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
-               style="background-image: url('<%= urls[0] %>');"></div>
+      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
+        <!-- ─── Text column ─── -->
+        <div class="md:col-span-5 relative reveal">
+          <!-- Thin fire accent line -->
+          <div class="absolute -left-6 top-2 bottom-2 w-px bg-linear-to-b from-blaze-red via-blaze-amber to-transparent hidden md:block"></div>
+
+          <div class="flex items-center gap-3">
+            <span class="chip bg-blaze-amber/10 text-blaze-amber border border-blaze-amber/20"><%= site_setting.vibe_eyebrow %></span>
+            <span class="text-[10px] tracking-[0.3em] uppercase text-white/30">— the room</span>
+          </div>
+
+          <h2 class="font-display text-5xl md:text-6xl lg:text-7xl font-black mt-6 leading-[0.88] tracking-[-0.02em]"
+              data-controller="text-reveal"
+              data-text-reveal-stagger-value="70">
+            <%= site_setting.vibe_headline %>
+          </h2>
+
+          <p class="mt-8 text-white/60 text-lg max-w-md leading-relaxed"><%= site_setting.vibe_body %></p>
+
+          <!-- Stat strip -->
+          <div class="mt-10 flex items-center gap-6 md:gap-8 flex-wrap">
+            <div>
+              <p class="font-display text-3xl md:text-4xl font-black fire-text leading-none">2k+</p>
+              <p class="text-[10px] tracking-[0.25em] uppercase text-white/40 mt-1.5">guests / week</p>
+            </div>
+            <div class="w-px h-10 bg-white/10"></div>
+            <div>
+              <p class="font-display text-3xl md:text-4xl font-black text-white leading-none">7</p>
+              <p class="text-[10px] tracking-[0.25em] uppercase text-white/40 mt-1.5">nights live</p>
+            </div>
+            <div class="w-px h-10 bg-white/10"></div>
+            <div>
+              <p class="font-display text-3xl md:text-4xl font-black text-white leading-none">∞</p>
+              <p class="text-[10px] tracking-[0.25em] uppercase text-white/40 mt-1.5">memories</p>
+            </div>
+          </div>
+
+          <div class="mt-10 flex gap-4 flex-wrap">
+            <%= link_to "See the menu", menu_items_path, class: "btn-primary text-sm", data: { controller: "magnetic" } %>
+            <%= link_to "Visit us", locations_path, class: "btn-ghost text-sm" %>
+          </div>
         </div>
-        <div class="overflow-hidden rounded-3xl reveal">
-          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
-               style="background-image: url('<%= urls[1] %>');"></div>
-        </div>
-        <div class="overflow-hidden rounded-3xl reveal">
-          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
-               style="background-image: url('<%= urls[2] %>');"></div>
-        </div>
-        <div class="col-span-2 overflow-hidden rounded-3xl reveal">
-          <div class="w-full h-full bg-cover bg-center hover:scale-105 transition duration-700"
-               style="background-image: url('<%= urls[3] %>');"></div>
+
+        <!-- ─── Image column — editorial bento ─── -->
+        <div class="md:col-span-7 relative">
+          <% urls = vibe_gallery_urls(5) %>
+
+          <!-- Floating numeral watermark -->
+          <div class="hidden md:block absolute -top-10 -right-4 pointer-events-none">
+            <p class="font-display text-[140px] font-black leading-none text-transparent bg-clip-text bg-linear-to-br from-blaze-red/30 to-transparent">01</p>
+          </div>
+
+          <div class="grid grid-cols-6 grid-rows-6 gap-3 md:gap-4 h-[480px] md:h-[620px] relative">
+            <!-- Hero image — tall portrait spanning 3 cols / full height -->
+            <div class="col-span-3 row-span-6 relative reveal" data-controller="tilt" data-tilt-max-value="5" style="transform-style: preserve-3d;">
+              <div class="absolute inset-0 rounded-[2rem] overflow-hidden bg-cover bg-center shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/10"
+                   style="background-image: url('<%= urls[0] %>');">
+                <!-- Sticker -->
+                <div class="absolute top-4 left-4 chip bg-black/60 backdrop-blur text-blaze-amber border border-white/15 text-[10px]">
+                  ● LIVE TONIGHT
+                </div>
+                <!-- Caption -->
+                <div class="absolute bottom-4 left-4 right-4">
+                  <p class="text-[10px] tracking-[0.3em] uppercase text-white/60">01 · The floor</p>
+                  <p class="font-display text-lg font-bold text-white mt-1 drop-shadow-lg">House of Blaze</p>
+                </div>
+                <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/80 via-transparent to-transparent"></div>
+              </div>
+            </div>
+
+            <!-- Upper-right wide image -->
+            <div class="col-span-3 row-span-3 relative reveal" data-controller="tilt" data-tilt-max-value="6">
+              <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden bg-cover bg-center ring-1 ring-white/10"
+                   style="background-image: url('<%= urls[1] %>');">
+                <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/70 to-transparent"></div>
+                <div class="absolute bottom-3 left-4">
+                  <p class="text-[9px] tracking-[0.3em] uppercase text-white/60">02 · Plates</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lower-right left square -->
+            <div class="col-span-2 row-span-3 relative reveal" data-controller="tilt" data-tilt-max-value="6">
+              <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden bg-cover bg-center ring-1 ring-white/10"
+                   style="background-image: url('<%= urls[2] %>');">
+                <div class="absolute inset-0 bg-linear-to-t from-blaze-ink/70 to-transparent"></div>
+                <div class="absolute bottom-3 left-3">
+                  <p class="text-[9px] tracking-[0.3em] uppercase text-white/60">03 · Heat</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lower-right right square (with fire accent border) -->
+            <div class="col-span-1 row-span-3 relative reveal">
+              <div class="absolute inset-0 rounded-[1.5rem] overflow-hidden bg-cover bg-center ring-1 ring-blaze-red/40 shadow-[0_0_40px_-5px_rgba(232,52,26,0.4)]"
+                   style="background-image: url('<%= urls[3] %>');">
+                <div class="absolute inset-0 bg-linear-to-t from-blaze-red/40 via-blaze-ink/30 to-transparent"></div>
+                <div class="absolute inset-0 grid place-items-center">
+                  <span class="font-display text-4xl font-black fire-text">04</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pull quote below bento -->
+          <div class="mt-8 pl-6 border-l-2 border-blaze-red/60 max-w-md reveal">
+            <p class="text-white/70 italic leading-relaxed">"It doesn't feel like Ondo. It feels like Lagos after midnight."</p>
+            <p class="mt-2 text-[10px] tracking-[0.3em] uppercase text-white/40">— a regular, Friday night</p>
+          </div>
         </div>
       </div>
     </div>
