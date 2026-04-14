@@ -673,6 +673,81 @@ films = [
       unsplash("1518929458119-e5bf444c30f4", w: 900, h: 1200),
       picsum("buka-street", w: 900, h: 1200)
     ]
+  },
+
+  # ═══════ INTERNATIONAL BLOCKBUSTERS ═══════
+  # TMDB will replace these stock posters with the real ones on first seed.
+  {
+    title: "Dune: Part Two",
+    synopsis: "Paul Atreides unites with the Fremen to lead a revolt against those who destroyed his family. Denis Villeneuve's epic continuation.",
+    price: 4500,
+    poster_urls: [ unsplash("1440404653325-ab127d49abc1", w: 900, h: 1200), picsum("dune-part-two", w: 900, h: 1200) ]
+  },
+  {
+    title: "Oppenheimer",
+    synopsis: "Christopher Nolan's biographical thriller about the physicist who built the atomic bomb. Cillian Murphy, Robert Downey Jr.",
+    price: 4500,
+    poster_urls: [ unsplash("1485846234645-a62644f84728", w: 900, h: 1200), picsum("oppenheimer", w: 900, h: 1200) ]
+  },
+  {
+    title: "Barbie",
+    synopsis: "Greta Gerwig's candy-coloured existential comedy. Margot Robbie, Ryan Gosling and a pink world that asks real questions.",
+    price: 4000,
+    poster_urls: [ unsplash("1478720568477-152d9b164e26", w: 900, h: 1200), picsum("barbie", w: 900, h: 1200) ]
+  },
+  {
+    title: "The Batman",
+    synopsis: "A brooding noir take on Gotham's dark knight. Robert Pattinson's debut as Bruce Wayne, hunting the Riddler.",
+    price: 4000,
+    poster_urls: [ unsplash("1534528741775-53994a69daeb", w: 900, h: 1200), picsum("the-batman", w: 900, h: 1200) ]
+  },
+  {
+    title: "Top Gun: Maverick",
+    synopsis: "After more than 30 years, Maverick is back pushing the envelope as a top naval aviator — training a new generation of pilots.",
+    price: 4000,
+    poster_urls: [ unsplash("1489599849927-2ee91cede3ba", w: 900, h: 1200), picsum("top-gun-maverick", w: 900, h: 1200) ]
+  },
+  {
+    title: "Spider-Man: No Way Home",
+    synopsis: "Peter Parker's identity is exposed and he seeks Doctor Strange's help — but a spell gone wrong unleashes the multiverse.",
+    price: 3800,
+    poster_urls: [ unsplash("1542204165-65bf26472b9b", w: 900, h: 1200), picsum("spiderman-nwh", w: 900, h: 1200) ]
+  },
+  {
+    title: "John Wick: Chapter 4",
+    synopsis: "John Wick uncovers a path to defeating the High Table. But before earning his freedom, he must face off against a new enemy.",
+    price: 3800,
+    poster_urls: [ unsplash("1486572788966-cfd3df1f5b42", w: 900, h: 1200), picsum("john-wick-4", w: 900, h: 1200) ]
+  },
+  {
+    title: "Black Panther: Wakanda Forever",
+    synopsis: "Queen Ramonda, Shuri, M'Baku and the Dora Milaje fight to protect Wakanda from intervening world powers in the wake of T'Challa's death.",
+    price: 4000,
+    poster_urls: [ unsplash("1598899134739-24c46f58b8c0", w: 900, h: 1200), picsum("wakanda-forever", w: 900, h: 1200) ]
+  },
+  {
+    title: "Avatar: The Way of Water",
+    synopsis: "Jake Sully and Neytiri protect their family as a familiar threat returns to finish what was started.",
+    price: 4200,
+    poster_urls: [ unsplash("1518929458119-e5bf444c30f4", w: 900, h: 1200), picsum("avatar-way-of-water", w: 900, h: 1200) ]
+  },
+  {
+    title: "Deadpool & Wolverine",
+    synopsis: "The merc with a mouth meets the clawed mutant. Marvel's first R-rated team-up — chaotic, self-aware and very loud.",
+    price: 4500,
+    poster_urls: [ unsplash("1440404653325-ab127d49abc1", w: 900, h: 1200), picsum("deadpool-wolverine", w: 900, h: 1200) ]
+  },
+  {
+    title: "Mission: Impossible - Dead Reckoning Part One",
+    synopsis: "Ethan Hunt and the IMF team take on their most dangerous mission yet: tracking down a terrifying new weapon before it falls into the wrong hands.",
+    price: 4200,
+    poster_urls: [ unsplash("1485846234645-a62644f84728", w: 900, h: 1200), picsum("mi-dead-reckoning", w: 900, h: 1200) ]
+  },
+  {
+    title: "Gladiator II",
+    synopsis: "Ridley Scott's return to the Colosseum. Paul Mescal as Lucius faces down Rome after losing his home to the emperors.",
+    price: 4500,
+    poster_urls: [ unsplash("1534528741775-53994a69daeb", w: 900, h: 1200), picsum("gladiator-ii", w: 900, h: 1200) ]
   }
 ]
 
