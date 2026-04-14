@@ -9,7 +9,7 @@
   </div>
 
   <%= form_with model: @order, url: orders_path, class: "mt-10 grid lg:grid-cols-3 gap-8",
-        data: { controller: "fulfillment" } do |f| %>
+        data: { controller: "fulfillment", turbo: false } do |f| %>
     <% if @order.errors.any? %>
       <div class="lg:col-span-3 card p-4 border-red-500/30 bg-red-500/5">
         <ul class="text-xs text-red-300/80 list-disc list-inside">

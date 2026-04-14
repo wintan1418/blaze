@@ -32,7 +32,8 @@
       </div>
     </div>
 
-    <%= form_with model: @booking, url: screening_booking_path(@screening), class: "mt-8 space-y-6" do |f| %>
+    <%= form_with model: @booking, url: screening_booking_path(@screening), class: "mt-8 space-y-6",
+          data: { turbo: false } do |f| %>
       <% if @booking.errors.any? %>
         <div class="card p-4 border-red-500/30 bg-red-500/5">
           <ul class="text-xs text-red-300/80 list-disc list-inside">
