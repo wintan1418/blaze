@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0A0A0B; color: #F4F4F5; margin: 0; padding: 0; }
+    .wrap { max-width: 560px; margin: 0 auto; padding: 40px 24px; }
+    .badge { display: inline-block; background: #E8341A; color: white; padding: 4px 12px; border-radius: 999px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
+    h1 { font-size: 32px; margin: 16px 0 8px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
+    .ref { font-family: monospace; color: #71717A; font-size: 13px; }
+    .card { background: #13131A; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; margin: 24px 0; }
+    .row { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; }
+    .row:last-child { border-bottom: none; }
+    .label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.4); }
+    .value { font-weight: 600; }
+    .total { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #E8341A, #F5A623); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .foot { color: rgba(255,255,255,0.4); font-size: 12px; text-align: center; margin-top: 32px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="badge"><%= @event.to_s.humanize %></span>
+
+    <% case @event
+       when :order_received %>
+      <h1>We got your order.</h1>
+      <p>Thanks for ordering from Blaze Cafe. We'll start prepping as soon as payment is confirmed.</p>
+    <% when :order_paid %>
+      <h1>Payment confirmed. You're in.</h1>
+      <p>We're firing up the kitchen right now.</p>
+    <% when :order_ready %>
+      <h1><%= @order.delivery? ? "Your order is leaving the kitchen." : "Your order is ready." %></h1>
+      <p><%= @order.delivery? ? "Our driver is on the way. Keep your phone close — they'll call you." : "Come through to the counter whenever you're ready." %></p>
+    <% when :order_out_for_delivery %>
+      <h1>Out for delivery.</h1>
+      <p>The driver is on the way. They'll ring you when they're close.</p>
+    <% when :order_delivered %>
+      <h1>Delivered. Enjoy the fire 🔥</h1>
+      <p>We hope it hit. If it did, share a photo and tag us.</p>
+    <% end %>
+
+    <p class="ref">Ref: <%= @order.reference %></p>
+
+    <div class="card">
+      <div class="row">
+        <span class="label">Items</span>
+        <span class="value"><%= @order.item_count %></span>
+      </div>
+      <% @order.order_items.each do |item| %>
+        <div class="row">
+          <span style="color: rgba(255,255,255,0.7); font-size: 14px;"><%= item.quantity %>× <%= item.name_snapshot %></span>
+          <span style="color: rgba(255,255,255,0.7); font-size: 14px;">₦<%= (item.subtotal_kobo / 100).to_s.reverse.scan(/\d{1,3}/).join(",").reverse %></span>
+        </div>
+      <% end %>
+      <div class="row">
+        <span class="label">Total</span>
+        <span class="total">₦<%= (@order.total_kobo / 100).to_s.reverse.scan(/\d{1,3}/).join(",").reverse %></span>
+      </div>
+    </div>
+
+    <p style="color: rgba(255,255,255,0.7); font-size: 14px;">
+      <% if @order.delivery? %>
+        Fulfillment: <strong>Delivery</strong><br>
+        Address: <%= @order.delivery_address %>, <%= @order.delivery_city %>
+      <% else %>
+        Fulfillment: <strong><%= @order.fulfillment.humanize %></strong><% if @order.location %> @ <%= @order.location.name %><% end %>
+      <% end %>
+    </p>
+
+    <p class="foot">Blaze Cafe · Ondo State, Nigeria<br>Where good times come alive.</p>
+  </div>
+</body>
+</html>

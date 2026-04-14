@@ -1,0 +1,75 @@
+<% content_for :page_title, "Today's Specials" %>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <div class="max-w-3xl">
+    <span class="chip bg-blaze-amber/10 text-blaze-amber">Limited time</span>
+    <h1 class="font-display text-5xl md:text-7xl font-black mt-6 leading-[0.95]">
+      Today's <span class="fire-text italic">specials</span>.
+    </h1>
+    <p class="mt-6 text-lg text-white/60 max-w-2xl">
+      Chef's limited drops — ofada, abula, craft film screenings. Once the slots run out, they're gone.
+    </p>
+  </div>
+
+  <% if @specials.any? %>
+    <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6" data-controller="reveal">
+      <% @specials.each do |special| %>
+        <div class="card overflow-hidden group hover:-translate-y-1 hover:border-blaze-red/40 transition reveal">
+          <div class="relative aspect-[4/3] overflow-hidden bg-linear-to-br from-blaze-red/30 to-blaze-amber/10">
+            <% if special.image_src.present? %>
+              <img src="<%= special.image_src %>" alt="<%= special.name %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+            <% else %>
+              <div class="w-full h-full grid place-items-center"><span class="font-display text-6xl font-black text-white/10">★</span></div>
+            <% end %>
+            <div class="absolute top-3 left-3">
+              <span class="chip bg-black/60 backdrop-blur text-blaze-amber border border-white/10 capitalize"><%= special.kind %></span>
+            </div>
+            <% if special.discount_percentage > 0 %>
+              <div class="absolute top-3 right-3">
+                <span class="chip bg-blaze-red text-white font-bold">-<%= special.discount_percentage %>%</span>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="p-6">
+            <h3 class="font-display text-xl font-bold group-hover:text-blaze-red transition"><%= special.name %></h3>
+            <p class="text-sm text-white/50 mt-2 line-clamp-2"><%= special.description %></p>
+
+            <div class="flex items-baseline gap-3 mt-4">
+              <p class="font-display text-2xl font-bold"><%= naira(special.price_kobo) %></p>
+              <% if special.original_price_kobo.to_i > special.price_kobo.to_i %>
+                <p class="text-sm text-white/40 line-through"><%= naira(special.original_price_kobo) %></p>
+              <% end %>
+            </div>
+
+            <!-- Slots progress -->
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-[10px] uppercase tracking-widest mb-1.5">
+                <span class="text-white/50"><%= special.slots_remaining %> / <%= special.slots_total %> left</span>
+                <span class="text-blaze-amber"><%= special.time_window_label %></span>
+              </div>
+              <div class="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full bg-linear-to-r from-blaze-red to-blaze-amber transition-all duration-700" style="width: <%= special.claim_percentage %>%"></div>
+              </div>
+            </div>
+
+            <div class="mt-5">
+              <% if special.sold_out? %>
+                <span class="btn-ghost text-sm w-full justify-center opacity-50 cursor-not-allowed">Sold out</span>
+              <% else %>
+                <%= button_to "Claim this", claim_special_path(special), method: :post,
+                      class: "btn-primary text-sm w-full justify-center",
+                      form: { data: { turbo: false } } %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card p-12 text-center mt-12">
+      <p class="font-display text-2xl text-white/60">No specials right now.</p>
+      <p class="text-sm text-white/40 mt-2">Check back later — drops happen most days.</p>
+    </div>
+  <% end %>
+</section>

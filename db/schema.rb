@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_14_104022) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_14_114414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -314,6 +314,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_104022) do
     t.string "ember_color", default: "FF5A1F", null: false
     t.string "experiences_eyebrow", default: "Experiences"
     t.string "experiences_headline", default: "Four ways to come alive."
+    t.string "facebook_url"
     t.text "footer_tagline", default: "Where good times come alive. Premium food, drinks, PlayStation gaming and private cinema — all under one roof across Ondo State."
     t.string "hero_cta_primary", default: "Explore the menu"
     t.string "hero_cta_secondary", default: "Book a session"
@@ -343,6 +344,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_104022) do
     t.string "vibe_headline", default: "This is how we come alive."
     t.string "whatsapp_url"
     t.string "x_url"
+    t.string "youtube_url"
+  end
+
+  create_table "specials", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "ends_at"
+    t.string "image_url"
+    t.string "kind", default: "food", null: false
+    t.bigint "location_id"
+    t.bigint "menu_item_id"
+    t.string "name", null: false
+    t.integer "original_price_kobo", default: 0, null: false
+    t.integer "price_kobo", default: 0, null: false
+    t.bigint "screening_id"
+    t.integer "slots_claimed", default: 0, null: false
+    t.integer "slots_total", default: 20, null: false
+    t.string "slug", null: false
+    t.datetime "starts_at"
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_specials_on_active"
+    t.index ["kind"], name: "index_specials_on_kind"
+    t.index ["location_id"], name: "index_specials_on_location_id"
+    t.index ["menu_item_id"], name: "index_specials_on_menu_item_id"
+    t.index ["screening_id"], name: "index_specials_on_screening_id"
+    t.index ["slug"], name: "index_specials_on_slug", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -379,4 +407,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_104022) do
   add_foreign_key "reviews", "users"
   add_foreign_key "screenings", "screens"
   add_foreign_key "screens", "locations"
+  add_foreign_key "specials", "locations"
+  add_foreign_key "specials", "menu_items"
+  add_foreign_key "specials", "screenings"
 end

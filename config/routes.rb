@@ -42,6 +42,11 @@ Rails.application.routes.draw do
   # Locations
   resources :locations, only: [ :index, :show ]
 
+  # Daily specials
+  resources :specials, only: [ :index, :show ] do
+    member { post :claim }
+  end
+
   # Staff floor view (staff + admin)
   namespace :staff do
     root to: "dashboard#index"
@@ -87,6 +92,7 @@ Rails.application.routes.draw do
       end
     end
     resources :offline_sales
+    resources :specials
     resources :users, only: [ :index, :edit, :update ]
   end
 

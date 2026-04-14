@@ -7,9 +7,10 @@
     <% case @order.payment_status
        when "paid" %><span class="chip bg-emerald-500/10 text-emerald-300">Paid</span>
     <% else %><span class="chip bg-blaze-amber/10 text-blaze-amber">Unpaid</span><% end %>
-    <p class="font-mono text-xs text-white/40 mt-4"><%= @order.reference %></p>
-    <h1 class="font-display text-4xl font-black mt-2 capitalize"><%= @order.status %></h1>
-    <% if @order.location %><p class="text-sm text-white/50 mt-2"><%= @order.fulfillment.humanize %> @ <%= @order.location.name %></p><% end %>
+    <h1 class="font-display text-4xl font-black mt-4 capitalize"><%= @order.status %></h1>
+    <div class="mt-4"><%= copyable_reference(@order.reference) %></div>
+    <% if @order.location %><p class="text-sm text-white/50 mt-4"><%= @order.fulfillment.humanize %> @ <%= @order.location.name %></p><% end %>
+    <p class="text-sm text-white/70 mt-3 max-w-sm mx-auto"><%= fulfillment_instruction(@order) %></p>
     <% if @order.delivery? %>
       <div class="mt-4 inline-flex items-center gap-2 chip
         <%= case @order.delivery_status

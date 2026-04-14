@@ -7,6 +7,11 @@ import CarouselController from "./carousel_controller"
 import FlashController from "./flash_controller"
 import FulfillmentController from "./fulfillment_controller"
 import ChartController from "./chart_controller"
+import ClipboardController from "./clipboard_controller"
+import CountUpController from "./count_up_controller"
+import MagneticController from "./magnetic_controller"
+import ParallaxController from "./parallax_controller"
+import TiltController from "./tilt_controller"
 
 application.register("hello", HelloController)
 application.register("nav", NavController)
@@ -15,3 +20,8 @@ application.register("carousel", CarouselController)
 application.register("flash", FlashController)
 application.register("fulfillment", FulfillmentController)
 application.register("chart", ChartController)
+application.register("clipboard", ClipboardController)
+application.register("count-up", CountUpController)
+application.register("magnetic", MagneticController)
+application.register("parallax", ParallaxController)
+application.register("tilt", TiltController)

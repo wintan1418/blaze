@@ -1,0 +1,53 @@
+<% content_for :page_title, @special.name %>
+
+<section class="max-w-5xl mx-auto px-6 lg:px-10 pt-16 pb-24">
+  <%= link_to "← All specials", specials_path, class: "text-sm text-white/50 hover:text-white" %>
+
+  <div class="grid md:grid-cols-2 gap-12 mt-8">
+    <div class="aspect-square rounded-3xl bg-linear-to-br from-blaze-red/30 via-blaze-amber/10 to-blaze-ink overflow-hidden border border-white/5">
+      <% if @special.image_src.present? %>
+        <img src="<%= @special.image_src %>" alt="<%= @special.name %>" class="w-full h-full object-cover">
+      <% else %>
+        <div class="w-full h-full grid place-items-center"><span class="font-display text-[12rem] font-black text-white/5">★</span></div>
+      <% end %>
+    </div>
+
+    <div>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="chip bg-blaze-amber/10 text-blaze-amber capitalize"><%= @special.kind %></span>
+        <% if @special.discount_percentage > 0 %>
+          <span class="chip bg-blaze-red text-white font-bold">Save <%= @special.discount_percentage %>%</span>
+        <% end %>
+      </div>
+      <h1 class="font-display text-5xl md:text-6xl font-black"><%= @special.name %></h1>
+      <p class="mt-6 text-white/70 text-lg leading-relaxed"><%= @special.description %></p>
+
+      <div class="flex items-baseline gap-4 mt-8">
+        <p class="font-display text-5xl font-bold fire-text"><%= naira(@special.price_kobo) %></p>
+        <% if @special.original_price_kobo.to_i > @special.price_kobo.to_i %>
+          <p class="text-lg text-white/40 line-through"><%= naira(@special.original_price_kobo) %></p>
+        <% end %>
+      </div>
+
+      <div class="card p-5 mt-6 space-y-3">
+        <div class="flex items-center justify-between text-xs uppercase tracking-widest">
+          <span class="text-white/50"><%= @special.slots_remaining %> of <%= @special.slots_total %> left</span>
+          <span class="text-blaze-amber"><%= @special.time_window_label %></span>
+        </div>
+        <div class="h-2 rounded-full bg-white/5 overflow-hidden">
+          <div class="h-full bg-linear-to-r from-blaze-red to-blaze-amber" style="width: <%= @special.claim_percentage %>%"></div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <% if @special.sold_out? %>
+          <span class="btn-ghost cursor-not-allowed opacity-50">Sold out</span>
+        <% else %>
+          <%= button_to "Claim this special", claim_special_path(@special), method: :post,
+                class: "btn-primary",
+                form: { data: { turbo: false } } %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

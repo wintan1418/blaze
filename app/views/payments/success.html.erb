@@ -9,17 +9,22 @@
 
   <span class="chip bg-emerald-500/10 text-emerald-300">Payment confirmed</span>
   <h1 class="font-display text-5xl md:text-6xl font-black mt-4">You're <span class="fire-text italic">in</span>.</h1>
-  <p class="mt-6 text-lg text-white/60">Your booking is locked in. Show this reference at the counter.</p>
+
+  <% record = @booking || @order %>
+  <% if record %>
+    <p class="mt-6 text-lg text-white/60 max-w-md mx-auto"><%= fulfillment_instruction(record) %></p>
+  <% end %>
+
+  <div class="mt-8 flex justify-center">
+    <%= copyable_reference(@booking&.reference || @order&.reference || @payment.reference) %>
+  </div>
 
   <div class="card p-8 mt-10 text-left">
-    <p class="label-blaze">Reference</p>
-    <p class="font-mono text-xl text-white mt-1"><%= @booking&.reference || @payment.reference %></p>
-
     <% if @booking %>
-      <div class="mt-6 pt-6 border-t border-white/10 space-y-4">
+      <div class="space-y-4">
         <div>
           <p class="label-blaze">For</p>
-          <p class="font-medium">
+          <p class="font-medium mt-1">
             <% if @booking.bookable.is_a?(GamingSlot) %>
               <%= @booking.bookable.gaming_console.label %>
             <% elsif @booking.bookable.is_a?(Screening) %>
@@ -29,7 +34,7 @@
         </div>
         <div>
           <p class="label-blaze">When</p>
-          <p class="font-medium"><%= @booking.bookable.starts_at.strftime("%A, %B %d · %I:%M %p") %></p>
+          <p class="font-medium mt-1"><%= @booking.bookable.starts_at.strftime("%A, %B %d · %I:%M %p") %></p>
         </div>
         <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
           <div>
@@ -42,11 +47,39 @@
           </div>
         </div>
       </div>
+    <% elsif @order %>
+      <div class="space-y-4">
+        <div>
+          <p class="label-blaze">Items</p>
+          <ul class="mt-2 space-y-1">
+            <% @order.order_items.each do |item| %>
+              <li class="text-sm flex justify-between">
+                <span><%= item.quantity %>× <%= item.name_snapshot %></span>
+                <span class="text-white/60"><%= naira(item.subtotal_kobo) %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+          <div>
+            <p class="label-blaze">Fulfillment</p>
+            <p class="font-medium mt-1 capitalize"><%= @order.fulfillment.humanize %></p>
+          </div>
+          <div class="text-right">
+            <p class="label-blaze">Paid</p>
+            <p class="font-display text-2xl font-bold fire-text"><%= naira(@order.total_kobo) %></p>
+          </div>
+        </div>
+      </div>
     <% end %>
   </div>
 
   <div class="mt-8 flex justify-center gap-3">
-    <%= link_to "My bookings", bookings_path, class: "btn-primary" %>
+    <% if @booking %>
+      <%= link_to "My bookings", bookings_path, class: "btn-primary" %>
+    <% elsif @order %>
+      <%= link_to "My orders", orders_path, class: "btn-primary" %>
+    <% end %>
     <%= link_to "Back to site", root_path, class: "btn-ghost" %>
   </div>
 

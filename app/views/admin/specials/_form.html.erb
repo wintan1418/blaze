@@ -1,0 +1,102 @@
+<%= form_with model: [ :admin, @special ], multipart: true, class: "space-y-6 max-w-2xl" do |f| %>
+  <% if @special.errors.any? %>
+    <div class="card p-4 border-red-500/30 bg-red-500/5">
+      <ul class="text-xs text-red-300/80 list-disc list-inside">
+        <% @special.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card p-6 space-y-5">
+    <div>
+      <label class="label-blaze">Name</label>
+      <%= f.text_field :name, class: "input-blaze", placeholder: "Ofada Special" %>
+    </div>
+    <div>
+      <label class="label-blaze">Description</label>
+      <%= f.text_area :description, rows: 3, class: "input-blaze" %>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="label-blaze">Kind</label>
+        <%= f.select :kind, Special::KINDS.map { |k| [ k.humanize, k ] }, {}, class: "input-blaze" %>
+      </div>
+      <div>
+        <label class="label-blaze">Location (optional)</label>
+        <%= f.collection_select :location_id, Location.active, :id, :name,
+              { include_blank: "— all locations —" }, class: "input-blaze" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-6 space-y-5">
+    <h3 class="font-display text-lg font-bold">Pricing & slots</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="label-blaze">Price (kobo)</label>
+        <%= f.number_field :price_kobo, step: 100, min: 0, class: "input-blaze" %>
+      </div>
+      <div>
+        <label class="label-blaze">Original price (kobo) — for discount badge</label>
+        <%= f.number_field :original_price_kobo, step: 100, min: 0, class: "input-blaze" %>
+      </div>
+      <div>
+        <label class="label-blaze">Total slots</label>
+        <%= f.number_field :slots_total, min: 0, class: "input-blaze" %>
+      </div>
+      <div>
+        <label class="label-blaze">Slots claimed</label>
+        <%= f.number_field :slots_claimed, min: 0, class: "input-blaze" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-6 space-y-5">
+    <h3 class="font-display text-lg font-bold">Availability window</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="label-blaze">Starts at</label>
+        <%= f.datetime_local_field :starts_at, value: @special.starts_at&.strftime("%Y-%m-%dT%H:%M"), class: "input-blaze" %>
+      </div>
+      <div>
+        <label class="label-blaze">Ends at</label>
+        <%= f.datetime_local_field :ends_at, value: @special.ends_at&.strftime("%Y-%m-%dT%H:%M"), class: "input-blaze" %>
+      </div>
+    </div>
+    <label class="flex items-center gap-2">
+      <%= f.check_box :active, class: "accent-blaze-red w-5 h-5" %>
+      <span class="text-sm text-white">Active (shown to customers)</span>
+    </label>
+  </div>
+
+  <div class="card p-6 space-y-5">
+    <h3 class="font-display text-lg font-bold">Link to existing records (optional)</h3>
+    <div>
+      <label class="label-blaze">Menu item — food/drink specials</label>
+      <%= f.collection_select :menu_item_id, MenuItem.available.order(:name), :id, :name,
+            { include_blank: "— none —" }, class: "input-blaze" %>
+    </div>
+    <div>
+      <label class="label-blaze">Screening — cinema specials</label>
+      <%= f.collection_select :screening_id, Screening.upcoming, :id, :title,
+            { include_blank: "— none —" }, class: "input-blaze" %>
+    </div>
+  </div>
+
+  <div class="card p-6 space-y-5">
+    <h3 class="font-display text-lg font-bold">Image</h3>
+    <div>
+      <label class="label-blaze">Image URL</label>
+      <%= f.url_field :image_url, class: "input-blaze", placeholder: "https://..." %>
+    </div>
+    <div>
+      <label class="label-blaze">Or upload</label>
+      <%= f.file_field :image, accept: "image/*", class: "input-blaze" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit class: "btn-primary" %>
+    <%= link_to "Cancel", admin_specials_path, class: "text-white/50 hover:text-white text-sm" %>
+  </div>
+<% end %>

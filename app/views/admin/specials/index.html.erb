@@ -1,0 +1,48 @@
+<% content_for :page_title, "Specials" %>
+<%= render "admin/shared/page_header", title: "Specials", subtitle: "Limited-slot daily drops",
+      action_label: "+ New special", action_path: new_admin_special_path %>
+
+<div class="grid md:grid-cols-2 gap-4">
+  <% @specials.each do |special| %>
+    <div class="card p-5 flex items-start gap-4">
+      <div class="w-24 h-24 rounded-xl bg-blaze-smoke overflow-hidden shrink-0">
+        <% if special.image_src.present? %>
+          <img src="<%= special.image_src %>" class="w-full h-full object-cover" alt="">
+        <% else %>
+          <div class="w-full h-full grid place-items-center text-white/20 text-2xl">★</div>
+        <% end %>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="chip bg-blaze-amber/10 text-blaze-amber capitalize"><%= special.kind %></span>
+          <% if special.live? %>
+            <span class="chip bg-emerald-500/10 text-emerald-300">Live</span>
+          <% elsif special.sold_out? %>
+            <span class="chip bg-red-500/10 text-red-300">Sold out</span>
+          <% else %>
+            <span class="chip bg-white/5 text-white/50">Off</span>
+          <% end %>
+        </div>
+        <h3 class="font-display text-lg font-bold mt-2 truncate"><%= special.name %></h3>
+        <p class="text-sm text-white/50 truncate"><%= special.description %></p>
+        <div class="mt-3 flex items-center justify-between text-xs">
+          <span class="text-white/60"><%= naira(special.price_kobo) %>
+            <% if special.discount_percentage > 0 %>
+              <span class="text-blaze-red">· -<%= special.discount_percentage %>%</span>
+            <% end %>
+          </span>
+          <span class="text-white/50"><%= special.slots_claimed %>/<%= special.slots_total %> claimed</span>
+        </div>
+        <div class="h-1 rounded-full bg-white/5 mt-2 overflow-hidden">
+          <div class="h-full bg-blaze-red" style="width: <%= special.claim_percentage %>%"></div>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <%= link_to "Edit", edit_admin_special_path(special), class: "btn-ghost text-xs" %>
+          <%= button_to "Delete", admin_special_path(special), method: :delete,
+                class: "text-white/40 hover:text-red-400 text-xs px-2",
+                form: { data: { turbo_confirm: "Delete this special?" }, class: "inline" } %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

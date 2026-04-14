@@ -1,0 +1,25 @@
+BLAZE CAFE — <%= @event.to_s.humanize %>
+Ref: <%= @order.reference %>
+
+<% case @event
+   when :order_received -%>
+We got your order. We'll start prepping as soon as payment is confirmed.
+<% when :order_paid -%>
+Payment confirmed. Kitchen is on it.
+<% when :order_ready -%>
+<%= @order.delivery? ? "Your order is leaving the kitchen — driver on the way." : "Your order is ready — come through to the counter." %>
+<% when :order_out_for_delivery -%>
+Out for delivery. The driver will call when close.
+<% when :order_delivered -%>
+Delivered. Enjoy the fire.
+<% end -%>
+
+Items:
+<% @order.order_items.each do |item| -%>
+  <%= item.quantity %>× <%= item.name_snapshot %> — ₦<%= (item.subtotal_kobo / 100).to_s.reverse.scan(/\d{1,3}/).join(",").reverse %>
+<% end -%>
+
+Total: ₦<%= (@order.total_kobo / 100).to_s.reverse.scan(/\d{1,3}/).join(",").reverse %>
+Fulfillment: <%= @order.fulfillment.humanize %>
+
+Blaze Cafe · Ondo State

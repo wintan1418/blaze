@@ -50,7 +50,7 @@ class Order < ApplicationRecord
   def mark_paid!(at: Time.current)
     update!(payment_status: "paid", paid_at: at, status: "preparing")
     self.update!(delivery_status: "pending") if delivery? && delivery_status == "none"
-    TermiiClient.send_order_confirmation(self) rescue nil
+    NotificationCenter.notify(:order_paid, order: self)
     award_food_stamp
   end
 
@@ -60,15 +60,20 @@ class Order < ApplicationRecord
                   when "preparing" then "ready"
                   when "ready"     then "completed"
                   end
-    update!(status: next_status) if next_status
+    return unless next_status
+
+    update!(status: next_status)
+    NotificationCenter.notify(:order_ready, order: self) if next_status == "ready"
   end
 
   def mark_dispatched!
     update!(delivery_status: "dispatched", dispatched_at: Time.current)
+    NotificationCenter.notify(:order_out_for_delivery, order: self)
   end
 
   def mark_delivered!
     update!(delivery_status: "delivered", delivered_at: Time.current, status: "completed")
+    NotificationCenter.notify(:order_delivered, order: self)
   end
 
   # Sums up item subtotals. Called before_save.

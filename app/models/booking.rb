@@ -30,8 +30,7 @@ class Booking < ApplicationRecord
   # Called after payment success — confirms the booking and fires notifications.
   def mark_paid!(at: Time.current)
     update!(payment_status: "paid", paid_at: at, status: "confirmed")
-    BookingMailer.confirmation(self).deliver_later rescue nil
-    TermiiClient.send_booking_confirmation(self) rescue nil
+    NotificationCenter.notify(:booking_confirmed, booking: self)
     award_loyalty_stamp
   end
 
@@ -48,6 +47,7 @@ class Booking < ApplicationRecord
 
   def cancel!
     update!(status: "cancelled")
+    NotificationCenter.notify(:booking_cancelled, booking: self)
   end
 
   def total_price_naira

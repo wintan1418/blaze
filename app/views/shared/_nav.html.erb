@@ -10,10 +10,14 @@
       <span class="font-display font-bold text-xl tracking-tight"><%= site_setting.logo_wordmark.sub('.', '').html_safe %><span class="text-blaze-red">.</span></span>
     <% end %>
 
-    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-white/70">
+    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-white/70">
       <%= link_to "Menu", menu_items_path, class: "hover:text-white transition" %>
       <%= link_to "Gaming", gaming_slots_path, class: "hover:text-white transition" %>
       <%= link_to "Cinema", screenings_path, class: "hover:text-white transition" %>
+      <%= link_to specials_path, class: "hover:text-white transition inline-flex items-center gap-1.5" do %>
+        Specials
+        <span class="w-1.5 h-1.5 rounded-full bg-blaze-red animate-pulse"></span>
+      <% end %>
       <%= link_to "Locations", locations_path, class: "hover:text-white transition" %>
       <%= link_to "About", about_path, class: "hover:text-white transition" %>
     </nav>

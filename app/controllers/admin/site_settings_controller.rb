@@ -26,7 +26,7 @@ module Admin
         # Identity
         :site_name, :tagline, :meta_description, :logo_mark, :logo_wordmark, :logo_image, :og_image,
         # Contact + socials
-        :contact_email, :contact_phone, :instagram_url, :tiktok_url, :x_url, :whatsapp_url,
+        :contact_email, :contact_phone, :instagram_url, :tiktok_url, :x_url, :whatsapp_url, :facebook_url, :youtube_url,
         # Brand
         :primary_color, :ember_color, :accent_color, :ink_color, :ash_color, :smoke_color,
         :display_font, :body_font,

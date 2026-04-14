@@ -8,14 +8,15 @@
        when "confirmed" %><span class="chip bg-emerald-500/10 text-emerald-300">Confirmed</span>
     <% when "cancelled" %><span class="chip bg-white/5 text-white/40">Cancelled</span>
     <% else %><span class="chip bg-blaze-amber/10 text-blaze-amber">Pending</span><% end %>
-    <p class="font-mono text-xs text-white/40 mt-4"><%= @booking.reference %></p>
-    <h1 class="font-display text-4xl font-black mt-2">
+    <h1 class="font-display text-4xl font-black mt-4">
       <% if @booking.bookable.is_a?(GamingSlot) %>
         <%= @booking.bookable.gaming_console.label %>
       <% elsif @booking.bookable.is_a?(Screening) %>
         <%= @booking.bookable.title %>
       <% end %>
     </h1>
+    <div class="mt-4"><%= copyable_reference(@booking.reference) %></div>
+    <p class="text-sm text-white/60 mt-4 max-w-sm mx-auto"><%= fulfillment_instruction(@booking) %></p>
   </div>
 
   <div class="card p-8 mt-10 space-y-6">
