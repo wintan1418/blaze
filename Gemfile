@@ -53,7 +53,7 @@ gem "cloudinary"
 gem "noticed"
 
 # URL slugs
-gem "friendly_id", "~> 5.5"
+gem "friendly_id", "~> 5.7"
 
 # SEO / meta tags
 gem "meta-tags"
