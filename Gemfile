@@ -59,7 +59,7 @@ gem "friendly_id", "~> 5.5"
 gem "meta-tags"
 
 # Pagination
-gem "pagy", "~> 9.0"
+gem "pagy", "~> 43.5"
 
 # Env vars
 gem "dotenv-rails"
